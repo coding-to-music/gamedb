@@ -9,7 +9,7 @@ if ($('#apps-random-page').length > 0) {
     $('select.form-control-chosen').chosen({
         disable_search_threshold: 5,
         allow_single_deselect: true,
-        max_selected_options: 1
+        max_selected_options: 1,
     });
 
     // Redirect on form change
@@ -21,7 +21,7 @@ if ($('#apps-random-page').length > 0) {
             params.delete($(this).attr('name'));
         }
         window.location.href = window.location.pathname + '?' + params.toString();
-    })
+    });
 
     // Fill form on page load
     $(function () {
@@ -29,6 +29,6 @@ if ($('#apps-random-page').length > 0) {
         if (window.location.search) {
             $selects.deserialize(window.location.search.replace('?', ''));
         }
-        $selects.trigger("chosen:updated");
-    })
+        $selects.trigger('chosen:updated');
+    });
 }

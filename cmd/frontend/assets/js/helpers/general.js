@@ -60,15 +60,15 @@ function ordinal(i) {
     let k = i % 100;
 
     if (j === 1 && k !== 11) {
-        return i.toLocaleString() + "st";
+        return i.toLocaleString() + 'st';
     }
     if (j === 2 && k !== 12) {
-        return i.toLocaleString() + "nd";
+        return i.toLocaleString() + 'nd';
     }
     if (j === 3 && k !== 13) {
-        return i.toLocaleString() + "rd";
+        return i.toLocaleString() + 'rd';
     }
-    return i.toLocaleString() + "th";
+    return i.toLocaleString() + 'th';
 }
 
 function pad(n, width, z) {
@@ -87,5 +87,5 @@ function serialiseTable(searchFields, order) {
 
     obj.order = order;
 
-    return obj
+    return obj;
 }

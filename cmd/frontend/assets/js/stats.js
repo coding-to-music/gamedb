@@ -5,23 +5,23 @@ if ($('#stats-page').length > 0) {
 
         loadAjaxOnObserve({
             // Steam
-            "client-players": statsClientPlayers,
-            "client-players2": statsClientPlayers2,
-            "scores": statsAppScores,
-            "release-dates": statsReleaseDates,
-            "app-types": statsAppTypes,
+            'client-players': statsClientPlayers,
+            'client-players2': statsClientPlayers2,
+            'scores': statsAppScores,
+            'release-dates': statsReleaseDates,
+            'app-types': statsAppTypes,
 
             // Global Steam
-            "player-countries": playerCountries,
-            "player-levels": statsPlayerLevels,
-            "player-update-days": statsPlayerUpdateDays,
+            'player-countries': playerCountries,
+            'player-levels': statsPlayerLevels,
+            'player-update-days': statsPlayerUpdateDays,
         });
 
         //
         function statsClientPlayers() {
 
             $.ajax({
-                type: "GET",
+                type: 'GET',
                 url: '/stats/client-players.json',
                 dataType: 'json',
                 success: function (data, textStatus, jqXHR) {
@@ -34,13 +34,13 @@ if ($('#stats-page').length > 0) {
                         yAxis: {
                             allowDecimals: false,
                             title: {
-                                text: ''
-                            }
+                                text: '',
+                            },
                         },
                         tooltip: {
                             formatter: function () {
 
-                                const time = moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
+                                const time = moment(this.key).format('dddd DD MMM YYYY @ HH:mm');
 
                                 if (this.series.name === 'Ingame') {
                                     return this.y.toLocaleString() + ' people in a game on ' + time;
@@ -62,7 +62,7 @@ if ($('#stats-page').length > 0) {
                                 data: data['max_player_online'],
                                 type: 'line',
                             },
-                        ]
+                        ],
                     }));
                 },
             });
@@ -71,7 +71,7 @@ if ($('#stats-page').length > 0) {
         function statsClientPlayers2() {
 
             $.ajax({
-                type: "GET",
+                type: 'GET',
                 url: '/stats/client-players2.json',
                 dataType: 'json',
                 success: function (data, textStatus, jqXHR) {
@@ -87,13 +87,13 @@ if ($('#stats-page').length > 0) {
                         yAxis: {
                             allowDecimals: false,
                             title: {
-                                text: ''
-                            }
+                                text: '',
+                            },
                         },
                         tooltip: {
                             formatter: function () {
 
-                                const time = moment(this.key).format("dddd DD MMM YYYY");
+                                const time = moment(this.key).format('dddd DD MMM YYYY');
 
                                 if (this.series.name === 'In Game') {
                                     return this.y.toLocaleString() + ' people in a game on ' + time;
@@ -115,7 +115,7 @@ if ($('#stats-page').length > 0) {
                                 data: data['max_player_online'],
                                 type: 'line',
                             },
-                        ]
+                        ],
                     }));
                 },
             });
@@ -124,7 +124,7 @@ if ($('#stats-page').length > 0) {
         function statsAppTypes() {
 
             $.ajax({
-                type: "GET",
+                type: 'GET',
                 url: '/stats/app-types.json',
                 dataType: 'json',
                 cache: true,
@@ -142,16 +142,16 @@ if ($('#stats-page').length > 0) {
                                     '<>': 'td', 'html': '${typef}',
                                 },
                                 {
-                                    '<>': 'td', 'html': '${countf}'
+                                    '<>': 'td', 'html': '${countf}',
                                 },
                                 {
-                                    '<>': 'td', 'html': '${totalf}'
+                                    '<>': 'td', 'html': '${totalf}',
                                 },
-                            ]
+                            ],
                         },
                         {
                             prepend: false,
-                        }
+                        },
                     );
 
                     $('#total-price').text(data.total);
@@ -164,7 +164,7 @@ if ($('#stats-page').length > 0) {
         function statsReleaseDates() {
 
             $.ajax({
-                type: "GET",
+                type: 'GET',
                 url: '/stats/release-dates.json',
                 dataType: 'json',
                 success: function (data, textStatus, jqXHR) {
@@ -183,12 +183,12 @@ if ($('#stats-page').length > 0) {
                         yAxis: {
                             allowDecimals: false,
                             title: {
-                                text: ''
-                            }
+                                text: '',
+                            },
                         },
                         tooltip: {
                             formatter: function () {
-                                return this.y.toLocaleString() + ' apps released on ' + moment(this.key).format("dddd DD MMM YYYY");
+                                return this.y.toLocaleString() + ' apps released on ' + moment(this.key).format('dddd DD MMM YYYY');
                             },
                         },
                         series: [{
@@ -202,7 +202,7 @@ if ($('#stats-page').length > 0) {
         function statsPlayerLevels() {
 
             $.ajax({
-                type: "GET",
+                type: 'GET',
                 url: '/stats/player-levels.json',
                 dataType: 'json',
                 success: function (data, textStatus, jqXHR) {
@@ -240,7 +240,7 @@ if ($('#stats-page').length > 0) {
                             type: 'logarithmic',
                             allowDecimals: false,
                             title: {
-                                text: ''
+                                text: '',
                             },
                         },
                         tooltip: {
@@ -252,11 +252,11 @@ if ($('#stats-page').length > 0) {
                             series: {
                                 pointPadding: 0,
                                 groupPadding: 0,
-                            }
+                            },
                         },
                         series: [{
                             data: dataArray,
-                        }]
+                        }],
                     }));
                 },
             });
@@ -265,7 +265,7 @@ if ($('#stats-page').length > 0) {
         function statsPlayerUpdateDays() {
 
             $.ajax({
-                type: "GET",
+                type: 'GET',
                 url: '/stats/player-update-dates.json',
                 dataType: 'json',
                 success: function (data, textStatus, jqXHR) {
@@ -284,19 +284,19 @@ if ($('#stats-page').length > 0) {
                         yAxis: {
                             allowDecimals: false,
                             title: {
-                                text: ''
+                                text: '',
                             },
                         },
                         tooltip: {
                             formatter: function () {
-                                return this.y.toLocaleString() + ' players updated on ' + moment(this.x).format("dddd DD MMM YYYY");
+                                return this.y.toLocaleString() + ' players updated on ' + moment(this.x).format('dddd DD MMM YYYY');
                             },
                         },
                         plotOptions: {
                             series: {
                                 pointPadding: 0,
                                 groupPadding: 0,
-                            }
+                            },
                         },
                         series: [{
                             data: data,
@@ -309,7 +309,7 @@ if ($('#stats-page').length > 0) {
         function playerCountries() {
 
             $.ajax({
-                type: "GET",
+                type: 'GET',
                 url: '/stats/player-countries.json',
                 dataType: 'json',
                 success: function (data, textStatus, jqXHR) {
@@ -332,7 +332,7 @@ if ($('#stats-page').length > 0) {
                             series: {
                                 pointPadding: 0,
                                 groupPadding: 0,
-                            }
+                            },
                         },
                         series: [{
                             // name: 'Countries',
@@ -347,7 +347,7 @@ if ($('#stats-page').length > 0) {
         function statsAppScores() {
 
             $.ajax({
-                type: "GET",
+                type: 'GET',
                 url: '/stats/app-scores.json',
                 dataType: 'json',
                 success: function (data, textStatus, jqXHR) {
@@ -370,8 +370,8 @@ if ($('#stats-page').length > 0) {
                         yAxis: {
                             allowDecimals: false,
                             title: {
-                                text: ''
-                            }
+                                text: '',
+                            },
                         },
                         tooltip: {
                             formatter: function () {
@@ -387,14 +387,14 @@ if ($('#stats-page').length > 0) {
                                     events: {
                                         click: function () {
                                             window.location.href = '/games?score=' + this.x + '&score=' + (this.x + 1);
-                                        }
-                                    }
-                                }
-                            }
+                                        },
+                                    },
+                                },
+                            },
                         },
                         series: [{
-                            data: data
-                        }]
+                            data: data,
+                        }],
                     }));
                 },
             });

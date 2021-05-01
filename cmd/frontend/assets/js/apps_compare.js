@@ -14,37 +14,37 @@ if ($appsComparePage.length > 0) {
     function loadCompareSearchTable() {
 
         const options = {
-            "order": [[0, 'asc']],
-            "createdRow": function (row, data, dataIndex) {
+            'order': [[0, 'asc']],
+            'createdRow': function (row, data, dataIndex) {
                 $(row).attr('data-app-id', data[1]);
             },
-            "columnDefs": [
+            'columnDefs': [
                 // Icon / App Name
                 {
-                    "targets": 0,
-                    "render": function (data, type, row) {
-                        return '<a href="' + row[4] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[3] + '" alt="" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[2] + '</div></a>'
+                    'targets': 0,
+                    'render': function (data, type, row) {
+                        return '<a href="' + row[4] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[3] + '" alt="" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[2] + '</div></a>';
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
                 // Price
                 {
-                    "targets": 1,
-                    "render": function (data, type, row) {
+                    'targets': 1,
+                    'render': function (data, type, row) {
                         return row[6];
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
                 // Action
                 {
-                    "targets": 2,
-                    "render": function (data, type, row) {
+                    'targets': 2,
+                    'render': function (data, type, row) {
 
                         if (row[8]) {
                             return '<a href="' + row[7] + '" ><i class="fas fa-minus"></i> Remove</a>';
@@ -52,32 +52,32 @@ if ($appsComparePage.length > 0) {
                             return '<a href="' + row[7] + '" ><i class="fas fa-plus"></i> Add</a>';
                         }
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
                 // Community Link
                 {
-                    "targets": 3,
-                    "render": function (data, type, row) {
+                    'targets': 3,
+                    'render': function (data, type, row) {
                         if (row[5]) {
                             return '<a href="' + row[5] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';
                         }
                         return '';
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
                 // Search Score
                 {
-                    "targets": 4,
-                    "render": function (data, type, row) {
+                    'targets': 4,
+                    'render': function (data, type, row) {
                         return row[9];
                     },
-                    "orderable": false,
-                    "visible": user.isLocal,
+                    'orderable': false,
+                    'visible': user.isLocal,
                 },
-            ]
+            ],
         };
 
         const $ids = $('#ids');
@@ -124,20 +124,20 @@ if ($appsComparePage.length > 0) {
             plotOptions: {
                 series: {
                     marker: {
-                        enabled: false
+                        enabled: false,
                     },
-                }
+                },
             },
             tooltip: {
                 formatter: function () {
                     return this.series.name + ' had ' + this.y.toLocaleString() + ' players on '
-                        + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
+                        + moment(this.key).format('dddd DD MMM YYYY @ HH:mm');
                 },
             },
         });
 
         $.ajax({
-            type: "GET",
+            type: 'GET',
             url: '/games/compare/' + $appsComparePage.attr('data-id') + '/players.json',
             dataType: 'json',
             cache: true,
@@ -160,7 +160,7 @@ if ($appsComparePage.length > 0) {
         });
 
         $.ajax({
-            type: "GET",
+            type: 'GET',
             url: '/games/compare/' + $appsComparePage.attr('data-id') + '/players2.json',
             dataType: 'json',
             cache: true,
@@ -191,7 +191,7 @@ if ($appsComparePage.length > 0) {
         }
 
         $.ajax({
-            type: "GET",
+            type: 'GET',
             url: '/games/compare/' + $appsComparePage.attr('data-group-id') + '/members.json',
             dataType: 'json',
             cache: true,
@@ -211,7 +211,7 @@ if ($appsComparePage.length > 0) {
                     yAxis: {
                         allowDecimals: false,
                         title: {
-                            text: ''
+                            text: '',
                         },
                         labels: {
                             formatter: function () {
@@ -223,7 +223,7 @@ if ($appsComparePage.length > 0) {
                     tooltip: {
                         formatter: function () {
                             return this.series.name + ' had members on '
-                                + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
+                                + moment(this.key).format('dddd DD MMM YYYY @ HH:mm');
                         },
                     },
                     series: series,
@@ -239,7 +239,7 @@ if ($appsComparePage.length > 0) {
         }
 
         $.ajax({
-            type: "GET",
+            type: 'GET',
             url: '/games/compare/' + $appsComparePage.attr('data-id') + '/reviews.json',
             dataType: 'json',
             cache: true,
@@ -265,13 +265,13 @@ if ($appsComparePage.length > 0) {
                         labels: {
                             formatter: function () {
                                 return this.value + '%';
-                            }
-                        }
+                            },
+                        },
                     },
                     tooltip: {
                         formatter: function () {
                             return this.series.name + ' had a review score of ' + this.y.toLocaleString() + '% on '
-                                + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
+                                + moment(this.key).format('dddd DD MMM YYYY @ HH:mm');
                         },
                     },
                     series: series,
@@ -288,7 +288,7 @@ if ($appsComparePage.length > 0) {
         }
 
         $.ajax({
-            type: "GET",
+            type: 'GET',
             url: '/games/compare/' + $appsComparePage.attr('data-id') + '/prices.json',
             dataType: 'json',
             cache: true,
@@ -308,7 +308,7 @@ if ($appsComparePage.length > 0) {
                 Highcharts.chart('price-chart', $.extend(true, {}, defaultChartOptions, {
                     yAxis: {
                         title: {
-                            text: 'Price (' + user.userCurrencySymbol + ')'
+                            text: 'Price (' + user.userCurrencySymbol + ')',
                         },
                         allowDecimals: true,
                         min: 0,
@@ -326,7 +326,7 @@ if ($appsComparePage.length > 0) {
         }
 
         $.ajax({
-            type: "GET",
+            type: 'GET',
             url: '/games/compare/' + $appsComparePage.attr('data-id') + '/wishlists.json',
             dataType: 'json',
             cache: true,
@@ -350,7 +350,7 @@ if ($appsComparePage.length > 0) {
                     tooltip: {
                         formatter: function () {
                             return this.series.name + ' is in ' + this.y.toLocaleString() + ' wishlists on '
-                                + moment(this.key).format("dddd DD MMM YYYY");
+                                + moment(this.key).format('dddd DD MMM YYYY');
                         },
                     },
                     series: series,

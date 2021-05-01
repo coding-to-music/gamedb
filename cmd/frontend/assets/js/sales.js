@@ -15,7 +15,7 @@ if ($('#sales-page').length > 0) {
         $('select.form-control-chosen').chosen({
             disable_search_threshold: 5,
             allow_single_deselect: true,
-            max_selected_options: 10
+            max_selected_options: 10,
         });
 
         // Price slider
@@ -27,7 +27,7 @@ if ($('#sales-page').length > 0) {
             range: {
                 'min': 0,
                 'max': 100,
-            }
+            },
         });
 
         // Score slider
@@ -38,8 +38,8 @@ if ($('#sales-page').length > 0) {
             step: 1,
             range: {
                 'min': 0,
-                'max': 100
-            }
+                'max': 100,
+            },
         });
 
         // Discount slider
@@ -50,8 +50,8 @@ if ($('#sales-page').length > 0) {
             step: 1,
             range: {
                 'min': 0,
-                'max': 100
-            }
+                'max': 100,
+            },
         });
 
         // Index slider
@@ -64,7 +64,7 @@ if ($('#sales-page').length > 0) {
             range: {
                 'min': 1,
                 'max': indexMax + 1,
-            }
+            },
         });
 
         //
@@ -100,16 +100,16 @@ if ($('#sales-page').length > 0) {
 
         //
         const options = {
-            "order": [[3, 'desc']],
-            "createdRow": function (row, data, dataIndex) {
+            'order': [[3, 'desc']],
+            'createdRow': function (row, data, dataIndex) {
                 $(row).attr('data-link', data[3]);
                 $(row).attr('data-app-id', data[0]);
             },
-            "columnDefs": [
+            'columnDefs': [
                 // Icon / App Name
                 {
-                    "targets": 0,
-                    "render": function (data, type, row) {
+                    'targets': 0,
+                    'render': function (data, type, row) {
 
                         let field = row[1];
                         field = field + ' <br /><small>' + row[13] + ' / ' + row[10] + '</small>';
@@ -124,44 +124,44 @@ if ($('#sales-page').length > 0) {
                             field = field + ' <span class="badge badge-success float-right">Low Confidence</span>';
                         }
 
-                        return '<a href="' + row[3] + '" class="icon-name"><div class="icon"><img class="tall" data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + field + '</div></a>'
+                        return '<a href="' + row[3] + '" class="icon-name"><div class="icon"><img class="tall" data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + field + '</div></a>';
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
                     },
                     // "orderable": false,
                 },
                 // Price
                 {
-                    "targets": 1,
-                    "render": function (data, type, row) {
+                    'targets': 1,
+                    'render': function (data, type, row) {
                         if (!row[4]) {
                             return '-';
                         }
                         return row[4];
                     },
-                    "orderSequence": ["asc", "desc"],
+                    'orderSequence': ['asc', 'desc'],
                 },
                 // Discount
                 {
-                    "targets": 2,
-                    "render": function (data, type, row) {
+                    'targets': 2,
+                    'render': function (data, type, row) {
                         return row[5] + '%';
                     },
                     'orderSequence': ['asc'],
                 },
                 // Rating
                 {
-                    "targets": 3,
-                    "render": function (data, type, row) {
+                    'targets': 3,
+                    'render': function (data, type, row) {
                         return row[6];
                     },
                     'orderSequence': ['desc'],
                 },
                 // End Date
                 {
-                    "targets": 4,
-                    "render": function (data, type, row) {
+                    'targets': 4,
+                    'render': function (data, type, row) {
 
                         let time = '<span data-toggle="tooltip" data-placement="left" title="' + row[7] + '" data-livestamp="' + row[7] + '"></span>';
                         if (row[11]) {
@@ -170,37 +170,37 @@ if ($('#sales-page').length > 0) {
                         return time;
 
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');
                     },
                     'orderSequence': ['asc'],
                 },
                 // Release Date
                 {
-                    "targets": 5,
-                    "render": function (data, type, row) {
+                    'targets': 5,
+                    'render': function (data, type, row) {
                         if (!row[9].startsWith('1970-01-01')) {
                             return '<span data-toggle="tooltip" data-placement="left" title="' + row[9] + '" data-livestamp="' + row[9] + '"></span>';
                         }
                         return row[14];
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');
                     },
                     'orderSequence': ['desc', 'asc'],
                 },
                 // Link
                 {
-                    "targets": 6,
-                    "render": function (data, type, row) {
+                    'targets': 6,
+                    'render': function (data, type, row) {
                         if (row[8]) {
                             return '<a href="' + row[8] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';
                         }
                         return '';
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
-            ]
+            ],
         };
 
         // Default form inputs
@@ -235,7 +235,7 @@ if ($('#sales-page').length > 0) {
 
         $('table.table').gdbTable({
             tableOptions: options,
-            searchFields: searchFields
+            searchFields: searchFields,
         });
 
     })(jQuery, document);

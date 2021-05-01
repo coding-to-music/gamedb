@@ -44,7 +44,7 @@ if ($queuesPage.length > 0 || $playerMissingPage.length > 0) {
 
                 $.each(charts, function (index, value) {
 
-                    let seriesKey = 0
+                    let seriesKey = 0;
 
                     for (let k in data) {
                         if (data.hasOwnProperty(k)) {
@@ -73,7 +73,7 @@ if ($queuesPage.length > 0 || $playerMissingPage.length > 0) {
                 clearTimeout(timer);
                 $('#live-badge').addClass('badge-danger').removeClass('badge-secondary badge-success');
                 toast(false, 'Live functionality has stopped');
-            }
+            },
         });
     }
 
@@ -90,14 +90,14 @@ if ($queuesPage.length > 0 || $playerMissingPage.length > 0) {
                 labels: {
                     step: 1,
                     formatter: function () {
-                        return moment(this.value).format("h:mm");
+                        return moment(this.value).format('h:mm');
                     },
                 },
             },
             yAxis: {
                 // type: 'logarithmic',
                 title: {
-                    text: ''
+                    text: '',
                 },
                 allowDecimals: false,
                 min: 0,
@@ -105,10 +105,10 @@ if ($queuesPage.length > 0 || $playerMissingPage.length > 0) {
             plotOptions: {
                 series: {
                     marker: {
-                        enabled: false // Too close together
+                        enabled: false, // Too close together
                     },
-                    animation: false
-                }
+                    animation: false,
+                },
             },
             series: [],
             tooltip: {
@@ -117,7 +117,7 @@ if ($queuesPage.length > 0 || $playerMissingPage.length > 0) {
                 crosshairs: true,
                 formatter: function () {
 
-                    let s = '<b>' + moment(this.x).format("hh:mm") + '</b>';
+                    let s = '<b>' + moment(this.x).format('hh:mm') + '</b>';
                     $.each(this.points, function (i, point) {
                         if (point.y > 0) {
                             s += '<br/>' + point.series.name.replace(/^GDB_/, '') + ': ' + point.y.toLocaleString();
@@ -125,7 +125,7 @@ if ($queuesPage.length > 0 || $playerMissingPage.length > 0) {
                     });
                     return s;
                 },
-            }
+            },
         }));
     }
 }

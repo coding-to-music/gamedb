@@ -8,7 +8,7 @@ if ($priceChangesPage.length > 0) {
     $('select.form-control-chosen').chosen({
         disable_search_threshold: 5,
         allow_single_deselect: true,
-        max_selected_options: 10
+        max_selected_options: 10,
     });
 
     // Change slider
@@ -18,14 +18,14 @@ if ($priceChangesPage.length > 0) {
     const changeSlider = noUiSlider.create($changeElement[0], {
         start: [
             parseInt(changeLow ? changeLow : -100),
-            parseInt(changeHigh ? changeHigh : 100)
+            parseInt(changeHigh ? changeHigh : 100),
         ],
         connect: true,
         step: 1,
         range: {
             'min': -100,
-            'max': 100
-        }
+            'max': 100,
+        },
     });
 
     // Price slider
@@ -35,14 +35,14 @@ if ($priceChangesPage.length > 0) {
     const priceSlider = noUiSlider.create($priceElement[0], {
         start: [
             parseInt(priceLow ? priceLow : 0),
-            parseInt(priceHigh ? priceHigh : topPrice)
+            parseInt(priceHigh ? priceHigh : topPrice),
         ],
         connect: true,
         step: 1,
         range: {
             'min': 0,
-            'max': topPrice
-        }
+            'max': topPrice,
+        },
     });
 
     //
@@ -78,8 +78,8 @@ if ($priceChangesPage.length > 0) {
 
     // Init table
     const options = {
-        "order": [[4, 'desc']],
-        "createdRow": function (row, data, dataIndex) {
+        'order': [[4, 'desc']],
+        'createdRow': function (row, data, dataIndex) {
             $(row).attr('data-app-id', data[0]);
             $(row).attr('data-link', data[5]);
 
@@ -94,11 +94,11 @@ if ($priceChangesPage.length > 0) {
 
             $(row).addClass('col-grad-' + Math.round(x));
         },
-        "columnDefs": [
+        'columnDefs': [
             // App Name / Package Name
             {
-                "targets": 0,
-                "render": function (data, type, row) {
+                'targets': 0,
+                'render': function (data, type, row) {
 
                     let tagName = row[3];
                     if ($typeField.val() === 'all') {
@@ -109,39 +109,39 @@ if ($priceChangesPage.length > 0) {
                         }
                     }
 
-                    return '<a href="' + row[5] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[4] + '" alt="" data-lazy-alt="' + row[3] + '"></div><div class="name">' + tagName + '</div></a>'
+                    return '<a href="' + row[5] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[4] + '" alt="" data-lazy-alt="' + row[3] + '"></div><div class="name">' + tagName + '</div></a>';
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
-                    $(td).addClass('img')
+                'createdCell': function (td, cellData, rowData, row, col) {
+                    $(td).addClass('img');
                 },
-                "orderable": false
+                'orderable': false,
             },
             // Before
             {
-                "targets": 1,
-                "render": function (data, type, row) {
+                'targets': 1,
+                'render': function (data, type, row) {
                     return row[6];
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
+                'createdCell': function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
-                "orderable": false
+                'orderable': false,
             },
             // After
             {
-                "targets": 2,
-                "render": function (data, type, row) {
+                'targets': 2,
+                'render': function (data, type, row) {
                     return row[7];
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
+                'createdCell': function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
-                "orderable": false
+                'orderable': false,
             },
             // Change
             {
-                "targets": 3,
-                "render": function (data, type, row) {
+                'targets': 3,
+                'render': function (data, type, row) {
 
                     const small = '<small>' + row[9] + '%</small>';
 
@@ -151,23 +151,23 @@ if ($priceChangesPage.length > 0) {
 
                     return row[8] + ' ' + small;
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
+                'createdCell': function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
-                "orderable": false
+                'orderable': false,
             },
             // Time
             {
-                "targets": 4,
-                "render": function (data, type, row) {
+                'targets': 4,
+                'render': function (data, type, row) {
                     return '<span data-toggle="tooltip" data-placement="left" title="' + row[10] + '" data-livestamp="' + row[11] + '">' + row[10] + '</span>';
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
+                'createdCell': function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
-                "orderable": false
-            }
-        ]
+                'orderable': false,
+            },
+        ],
     };
 
     // Update table live
@@ -176,7 +176,7 @@ if ($priceChangesPage.length > 0) {
         $changeElement,
         $priceElement,
     ];
-    const original = serialiseTable(searchFields, options.order)
+    const original = serialiseTable(searchFields, options.order);
 
     const $table = $('table.table');
     const dt = $table.gdbTable({tableOptions: options, searchFields: searchFields});
@@ -190,7 +190,7 @@ if ($priceChangesPage.length > 0) {
             const info = dt.page.info();
             if (info.page === 0) { // Page 1
 
-                success = true
+                success = true;
 
                 // Check cc matches
                 const data = JSON.parse(e.data);
@@ -198,7 +198,7 @@ if ($priceChangesPage.length > 0) {
 
                     // Add row
                     addDataTablesRow(options, data.Data, info.length, $table);
-                    return
+                    return;
                 }
             }
         }

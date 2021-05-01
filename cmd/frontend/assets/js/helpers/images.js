@@ -13,9 +13,9 @@ function handleVideos() {
         const video = $(this)[0];
         if (video.paused) {
             pauseAllVideos();
-            video.play()
+            video.play();
         } else {
-            video.pause()
+            video.pause();
         }
     });
 }
@@ -43,7 +43,7 @@ function observeLazyImages($target) {
 
     const config = {
         rootMargin: '0px 0px 50px 0px',
-        threshold: 0
+        threshold: 0,
     };
 
     let observer = new IntersectionObserver(callback, config);
@@ -70,7 +70,7 @@ function observeLazyVideos() {
 
     const config = {
         rootMargin: '0px 0px 50px 0px',
-        threshold: 0
+        threshold: 0,
     };
 
     let observer = new IntersectionObserver(callback, config);
@@ -103,9 +103,9 @@ function loadImage($target) {
     }
 
     //
-    $target.removeAttr("data-lazy-alt");
-    $target.removeAttr("data-lazy-title");
-    $target.removeAttr("data-lazy");
+    $target.removeAttr('data-lazy-alt');
+    $target.removeAttr('data-lazy-title');
+    $target.removeAttr('data-lazy');
 
     $target.attr('data-observed', 1);
 }

@@ -3,7 +3,7 @@ const $bundlePage = $('#bundle-page');
 if ($bundlePage.length > 0) {
 
     $.ajax({
-        type: "GET",
+        type: 'GET',
         url: '/bundles/' + $bundlePage.attr('data-id') + '/prices.json',
         dataType: 'json',
         success: function (data, textStatus, jqXHR) {
@@ -18,20 +18,20 @@ if ($bundlePage.length > 0) {
                 },
                 tooltip: {
                     formatter: function () {
-                        return this.y.toLocaleString() + '% discount on ' + moment(this.x).format("dddd DD MMM YYYY @ HH:mm");
-                    }
+                        return this.y.toLocaleString() + '% discount on ' + moment(this.x).format('dddd DD MMM YYYY @ HH:mm');
+                    },
                 },
                 xAxis: {
                     labels: {
                         step: 1,
                         formatter: function () {
-                            return moment(this.value).format("Do MMM YY");
+                            return moment(this.value).format('Do MMM YY');
                         },
                     },
                 },
                 yAxis: {
                     title: {
-                        text: ''
+                        text: '',
                     },
                     type: 'linear',
                     max: 100,
@@ -50,7 +50,7 @@ if ($bundlePage.length > 0) {
                         step: 'left',
                         color: '#28a745',
                         data: data,
-                    }
+                    },
                 ],
             }));
         },

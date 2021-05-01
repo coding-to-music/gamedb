@@ -16,7 +16,7 @@ function websocketListener(page, onMessage, attempt = 1) {
     }
 
     // Connect
-    _websocket = new WebSocket((location.protocol === 'https:' ? "wss://" + window.location.hostname : "ws://" + location.host) + "/websocket/" + page);
+    _websocket = new WebSocket((location.protocol === 'https:' ? 'wss://' + window.location.hostname : 'ws://' + location.host) + '/websocket/' + page);
 
     let $badge = $('#live-badge');
 
@@ -46,7 +46,7 @@ function websocketListener(page, onMessage, attempt = 1) {
 
     _websocket.onmessage = function (e) {
         logLocal('WS: ' + e.data);
-        return onMessage(e)
+        return onMessage(e);
     };
 
     // Click to open/close websocket
@@ -97,5 +97,5 @@ function websocketListener(page, onMessage, attempt = 1) {
                 }, 5000);
             }
         }
-    }
+    };
 }

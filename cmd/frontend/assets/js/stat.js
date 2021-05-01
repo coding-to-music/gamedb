@@ -10,67 +10,67 @@ if ($statPage.length > 0) {
     function statTable() {
 
         const options = {
-            "order": [[1, 'desc']],
-            "createdRow": function (row, data, dataIndex) {
+            'order': [[1, 'desc']],
+            'createdRow': function (row, data, dataIndex) {
                 $(row).attr('data-link', data[8]);
                 $(row).attr('data-player-id', data[0]);
             },
-            "columnDefs": [
+            'columnDefs': [
                 // Icon / App Name
                 {
-                    "targets": 0,
-                    "render": function (data, type, row) {
-                        return '<a href="' + row[3] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></a>'
+                    'targets': 0,
+                    'render': function (data, type, row) {
+                        return '<a href="' + row[3] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></a>';
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
                 // Players
                 {
-                    "targets": 1,
-                    "render": function (data, type, row) {
+                    'targets': 1,
+                    'render': function (data, type, row) {
                         return row[4].toLocaleString();
                     },
-                    "orderSequence": ["desc"],
+                    'orderSequence': ['desc'],
                 },
                 // Price
                 {
-                    "targets": 2,
-                    "render": function (data, type, row) {
+                    'targets': 2,
+                    'render': function (data, type, row) {
                         return row[5];
                     },
-                    "orderSequence": ["desc"],
+                    'orderSequence': ['desc'],
                 },
                 // Discount
                 {
-                    "targets": 3,
-                    "render": function (data, type, row) {
+                    'targets': 3,
+                    'render': function (data, type, row) {
                         return row[8];
                     },
-                    "orderSequence": ["desc", "asc"],
+                    'orderSequence': ['desc', 'asc'],
                 },
                 // Score
                 {
-                    "targets": 4,
-                    "render": function (data, type, row) {
+                    'targets': 4,
+                    'render': function (data, type, row) {
                         return row[6];
                     },
-                    "orderSequence": ["desc"],
+                    'orderSequence': ['desc'],
                 },
                 // Link
                 {
-                    "targets": 5,
-                    "render": function (data, type, row) {
+                    'targets': 5,
+                    'render': function (data, type, row) {
                         if (row[7]) {
                             return '<a href="' + row[7] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';
                         }
                         return '';
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
-            ]
+            ],
         };
 
         $('#games').gdbTable({
@@ -84,7 +84,7 @@ if ($statPage.length > 0) {
     function statHighChart() {
 
         $.ajax({
-            type: "GET",
+            type: 'GET',
             url: '/' + $statPage.attr('data-stat-type') + '/' + $statPage.attr('data-stat-id') + '/time.json',
             dataType: 'json',
             success: function (data, textStatus, jqXHR) {
@@ -96,10 +96,10 @@ if ($statPage.length > 0) {
                 const yAxis = {
                     allowDecimals: false,
                     title: {
-                        text: ''
+                        text: '',
                     },
                     labels: {
-                        enabled: false
+                        enabled: false,
                     },
                 };
 
@@ -117,7 +117,7 @@ if ($statPage.length > 0) {
                     tooltip: {
                         formatter: function () {
 
-                            const day = moment(this.key).format("dddd DD MMM YYYY");
+                            const day = moment(this.key).format('dddd DD MMM YYYY');
 
                             switch (this.series.name) {
                                 case 'Apps':

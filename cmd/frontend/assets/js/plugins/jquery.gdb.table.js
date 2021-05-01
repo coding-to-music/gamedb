@@ -1,36 +1,36 @@
 ;(function ($, window, document, user, undefined) {
 
-    "use strict";
+    'use strict';
 
-    const pluginName = "gdbTable";
+    const pluginName = 'gdbTable';
     const defaults = {
         cache: true,
         searchFields: [],
         tableOptions: {
-            "autoWidth": false,
-            "buttons": ['csv'],
-            "dom": '<"dt-header"<"dt-pagination"p><"dt-info"iB>>t<"dt-footer"<"dt-pagination"p>>r',
-            "fixedHeader": true,
-            "info": true, // Counts
-            "processing": false,
-            "language": {
-                "processing": '<i class="fas fa-spinner fa-spin fa-3x fa-fw"></i>',
-                "paginate": {
-                    "next": '<i class="fas fa-chevron-right"></i>',
-                    "previous": '<i class="fas fa-chevron-left"></i>',
+            'autoWidth': false,
+            'buttons': ['csv'],
+            'dom': '<"dt-header"<"dt-pagination"p><"dt-info"iB>>t<"dt-footer"<"dt-pagination"p>>r',
+            'fixedHeader': true,
+            'info': true, // Counts
+            'processing': false,
+            'language': {
+                'processing': '<i class="fas fa-spinner fa-spin fa-3x fa-fw"></i>',
+                'paginate': {
+                    'next': '<i class="fas fa-chevron-right"></i>',
+                    'previous': '<i class="fas fa-chevron-left"></i>',
                 },
-                "info": "_TOTAL_ rows",
-                "infoFiltered": " of _MAX_",
+                'info': '_TOTAL_ rows',
+                'infoFiltered': ' of _MAX_',
             },
-            "lengthChange": false,
-            "ordering": true,
-            "pageLength": 100,
-            "paging": true,
-            "pagingType": 'gamedb',
-            "searching": true,
-            "stateSave": false,
-            "search": {
-                "smart": true,
+            'lengthChange': false,
+            'ordering': true,
+            'pageLength': 100,
+            'paging': true,
+            'pagingType': 'gamedb',
+            'searching': true,
+            'stateSave': false,
+            'search': {
+                'smart': true,
             },
         },
     };
@@ -44,7 +44,7 @@
 
         // Remove info text unless we want it
         if (!$element.hasClass('table-counts')) {
-            options.tableOptions.dom = options.tableOptions.dom.replace("<\"dt-info\"iB>", "");
+            options.tableOptions.dom = options.tableOptions.dom.replace('<"dt-info"iB>', '');
         }
 
         // Add helper
@@ -54,7 +54,7 @@
 
         const rowType = $element.attr('data-row-type');
         if (rowType) {
-            options.tableOptions.language.info = "_TOTAL_ " + rowType + " (_PAGES_ pages)";
+            options.tableOptions.language.info = '_TOTAL_ ' + rowType + ' (_PAGES_ pages)';
         }
 
         let initialValues = {};
@@ -84,18 +84,18 @@
                             error: function (jqXHR, textStatus, errorThrown) {
 
                                 data = {
-                                    "draw": "1",
-                                    "recordsTotal": "0",
-                                    "recordsFiltered": "0",
-                                    "data": [],
-                                    "limited": false
+                                    'draw': '1',
+                                    'recordsTotal': '0',
+                                    'recordsFiltered': '0',
+                                    'data': [],
+                                    'limited': false,
                                 };
 
                                 callback(data, textStatus, null);
                             },
                         });
                     },
-                }
+                },
             });
 
         } else {
@@ -108,11 +108,11 @@
                 tableOptions: {
                     columnDefs: [
                         {
-                            "orderable": false,
+                            'orderable': false,
                             targets: disabled,
-                        }
+                        },
                     ],
-                }
+                },
             });
 
             const limit = $element.attr('data-limit');
@@ -283,7 +283,7 @@
                     padding = padding + 48;
                 }
                 $('html, body').animate({
-                    scrollTop: $(this).prev().offset().top - padding
+                    scrollTop: $(this).prev().offset().top - padding,
                 }, 200);
             });
 
@@ -424,7 +424,7 @@
             $field.val(value);
 
             if ($field.hasClass('form-control-chosen')) {
-                $field.trigger("chosen:updated");
+                $field.trigger('chosen:updated');
             }
         }
     }

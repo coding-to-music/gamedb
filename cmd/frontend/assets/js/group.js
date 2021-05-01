@@ -21,75 +21,75 @@ if ($groupPage.length > 0) {
     function loadGroupPlayers() {
 
         const options = {
-            "order": [[2, 'desc']],
-            "createdRow": function (row, data, dataIndex) {
+            'order': [[2, 'desc']],
+            'createdRow': function (row, data, dataIndex) {
                 $(row).attr('data-link', data[3]);
                 $(row).attr('data-app-id', data[0]);
             },
-            "columnDefs": [
+            'columnDefs': [
                 // Flag
                 {
-                    "targets": 0,
-                    "render": function (data, type, row) {
+                    'targets': 0,
+                    'render': function (data, type, row) {
                         if (row[6]) {
                             const img = '<img data-lazy="' + row[4] + '" alt="" data-lazy-alt="' + row[6] + '" class="wide" data-toggle="tooltip" data-placement="left" data-lazy-title="' + row[6] + '">';
                             return '<a href="/players?country=' + row[6] + '">' + img + '</a>';
                         }
                         return '';
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
                 // Icon / Player Name
                 {
-                    "targets": 1,
-                    "render": function (data, type, row) {
-                        return '<a href="' + row[8] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[3] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></a>'
+                    'targets': 1,
+                    'render': function (data, type, row) {
+                        return '<a href="' + row[8] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[3] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></a>';
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
                 // Avatar 2 / Level
                 {
-                    "targets": 2,
-                    "render": function (data, type, row) {
-                        return '<div class="icon-name"><div class="icon"><div class="' + row[7] + '"></div></div><div class="name min nowrap">' + row[5].toLocaleString() + '</div></div>'
+                    'targets': 2,
+                    'render': function (data, type, row) {
+                        return '<div class="icon-name"><div class="icon"><div class="' + row[7] + '"></div></div><div class="name min nowrap">' + row[5].toLocaleString() + '</div></div>';
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
                     },
-                    "orderSequence": ["desc", "asc"],
+                    'orderSequence': ['desc', 'asc'],
                 },
                 // Games
                 {
-                    "targets": 3,
-                    "render": function (data, type, row) {
+                    'targets': 3,
+                    'render': function (data, type, row) {
                         if (row[9]) {
                             return row[9].toLocaleString();
                         }
                         return $lockIcon;
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
                     },
-                    "orderSequence": ["desc", "asc"],
+                    'orderSequence': ['desc', 'asc'],
                 },
                 // Link
                 {
-                    "targets": 4,
-                    "render": function (data, type, row) {
+                    'targets': 4,
+                    'render': function (data, type, row) {
                         if (row[2]) {
                             return '<a href="' + row[2] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';
                         }
                         return '';
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
-            ]
+            ],
         };
 
         $('#players').gdbTable({
@@ -106,12 +106,12 @@ function loadGroupChart($page) {
 
     const $groupChart = $('#group-chart');
     if ($groupChart.length === 0) {
-        return
+        return;
     }
 
     // Load chart
     $.ajax({
-        type: "GET",
+        type: 'GET',
         url: '/groups/' + $page.attr('data-group-id') + '/members.json',
         dataType: 'json',
         success: function (data, textStatus, jqXHR) {
@@ -128,7 +128,7 @@ function loadGroupChart($page) {
                     {
                         allowDecimals: false,
                         title: {
-                            text: ''
+                            text: '',
                         },
                         labels: {
                             formatter: function () {
@@ -140,7 +140,7 @@ function loadGroupChart($page) {
                     {
                         allowDecimals: false,
                         title: {
-                            text: ''
+                            text: '',
                         },
                         labels: {
                             formatter: function () {
@@ -148,19 +148,19 @@ function loadGroupChart($page) {
                             },
                         },
                         opposite: true,
-                    }
+                    },
                 ],
                 tooltip: {
                     formatter: function () {
                         switch (this.series.name) {
                             case 'In Chat':
-                                return this.y.toLocaleString() + ' members in chat on ' + moment(this.key).format("dddd DD MMM YYYY");
+                                return this.y.toLocaleString() + ' members in chat on ' + moment(this.key).format('dddd DD MMM YYYY');
                             case 'In Game':
-                                return this.y.toLocaleString() + ' members in game on ' + moment(this.key).format("dddd DD MMM YYYY");
+                                return this.y.toLocaleString() + ' members in game on ' + moment(this.key).format('dddd DD MMM YYYY');
                             case 'Online':
-                                return this.y.toLocaleString() + ' members online ' + moment(this.key).format("dddd DD MMM YYYY");
+                                return this.y.toLocaleString() + ' members online ' + moment(this.key).format('dddd DD MMM YYYY');
                             case 'Members':
-                                return this.y.toLocaleString() + ' members on ' + moment(this.key).format("dddd DD MMM YYYY");
+                                return this.y.toLocaleString() + ' members on ' + moment(this.key).format('dddd DD MMM YYYY');
                         }
                     },
                 },

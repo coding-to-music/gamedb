@@ -1,6 +1,6 @@
 function captchaCallback(code) {
 
-    $('form[data-captcha] button[type=submit]').prop("disabled", false);
+    $('form[data-captcha] button[type=submit]').prop('disabled', false);
 
 
     const inputs = $('form[data-captcha] input[type=text], form input[type=email], form textarea').filter(function () {

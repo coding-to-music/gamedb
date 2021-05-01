@@ -30,8 +30,8 @@ const defaultChartOptions = {
         series: {
             marker: {
                 enabled: false,
-            }
-        }
+            },
+        },
     },
     colors: [
         '#28a745',
@@ -43,13 +43,13 @@ const defaultChartOptions = {
         '#e4d354',
         '#2b908f',
         '#f45b5b',
-        '#91e8e1'
+        '#91e8e1',
     ],
 };
 
 function plotline(val, text) {
 
-    val = parseInt(val)
+    val = parseInt(val);
 
     if (val.toString().length >= 10) { // Timestamp
         val = val * 1000;
@@ -68,7 +68,7 @@ function plotline(val, text) {
                 style: {
                     color: darkMode ? '#e9ecef' : '#000000',
                 },
-            }
-        }
+            },
+        },
     ];
 }

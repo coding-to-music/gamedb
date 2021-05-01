@@ -15,7 +15,7 @@ if ($xpPage.length > 0) {
         }
     }
 
-    $xpPage.on("click", "tr[data-level]", function (e) {
+    $xpPage.on('click', 'tr[data-level]', function (e) {
 
         const level = $(this).attr('data-level');
 

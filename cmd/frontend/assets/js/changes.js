@@ -1,38 +1,38 @@
 if ($('#changes-page').length > 0) {
 
     const options = {
-        "order": [[1, 'desc']],
-        "createdRow": function (row, data, dataIndex) {
+        'order': [[1, 'desc']],
+        'createdRow': function (row, data, dataIndex) {
             $(row).attr('data-link', data[5]);
         },
-        "columnDefs": [
+        'columnDefs': [
             // Change ID
             {
-                "targets": 0,
-                "render": function (data, type, row) {
-                    return '<a href="' + row[5] + '" class="icon-name"><div class="icon"><img src="/assets/img/no-app-image-square.jpg" alt="' + row[1] + '"></div><div class="name">' + row[6] + '</div></a>'
+                'targets': 0,
+                'render': function (data, type, row) {
+                    return '<a href="' + row[5] + '" class="icon-name"><div class="icon"><img src="/assets/img/no-app-image-square.jpg" alt="' + row[1] + '"></div><div class="name">' + row[6] + '</div></a>';
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
+                'createdCell': function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                     $(td).addClass('img');
                 },
-                "orderable": false
+                'orderable': false,
             },
             // Date
             {
-                "targets": 1,
-                "render": function (data, type, row) {
+                'targets': 1,
+                'render': function (data, type, row) {
                     return '<span data-toggle="tooltip" data-placement="left" title="' + row[2] + '" data-livestamp="' + row[1] + '"></span>';
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
+                'createdCell': function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
-                "orderable": false
+                'orderable': false,
             },
             // Apps
             {
-                "targets": 2,
-                "render": function (data, type, row) {
+                'targets': 2,
+                'render': function (data, type, row) {
 
                     let apps = [];
                     if (row[3] !== null) {
@@ -50,12 +50,12 @@ if ($('#changes-page').length > 0) {
 
                     return apps.join('<br/>');
                 },
-                "orderable": false
+                'orderable': false,
             },
             // Packages
             {
-                "targets": 3,
-                "render": function (data, type, row) {
+                'targets': 3,
+                'render': function (data, type, row) {
 
                     let packages = [];
                     if (row[4] !== null) {
@@ -73,9 +73,9 @@ if ($('#changes-page').length > 0) {
 
                     return packages.join('<br/>');
                 },
-                "orderable": false
+                'orderable': false,
             },
-        ]
+        ],
     };
 
     const $table = $('table.table');

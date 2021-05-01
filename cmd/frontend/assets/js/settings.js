@@ -10,22 +10,22 @@ if ($settingsPage.length > 0) {
     $('#reset-api-key-btn').on('click', function (e) {
 
         return bootbox.confirm({
-            message: "Are you sure? Any calls using the current API key will stop wirking.",
+            message: 'Are you sure? Any calls using the current API key will stop wirking.',
             buttons: {
                 confirm: {
                     label: 'Yes',
-                    className: 'btn-success'
+                    className: 'btn-success',
                 },
                 cancel: {
                     label: 'No',
-                    className: 'btn-danger'
-                }
+                    className: 'btn-danger',
+                },
             },
             callback: function (result) {
                 if (result) {
                     window.location.replace('/settings/new-key');
                 }
-            }
+            },
         });
     });
 
@@ -33,8 +33,8 @@ if ($settingsPage.length > 0) {
 
         // $(this).width((this.value.length) + 'ch');
         $(this).select();
-        document.execCommand("copy");
-        toast(true, 'API Key Copied')
+        document.execCommand('copy');
+        toast(true, 'API Key Copied');
     });
 
     loadAjaxOnObserve({
@@ -56,55 +56,55 @@ if ($settingsPage.length > 0) {
                 $('#type'),
             ],
             tableOptions: {
-                "order": [[0, 'desc']],
-                "columnDefs": [
+                'order': [[0, 'desc']],
+                'columnDefs': [
                     // Time
                     {
-                        "targets": 0,
-                        "render": function (data, type, row) {
+                        'targets': 0,
+                        'render': function (data, type, row) {
                             return '<span data-toggle="tooltip" data-placement="left" title="' + row[1] + '" data-livestamp="' + row[0] + '">' + row[1] + '</span>';
                         },
-                        "createdCell": function (td, cellData, rowData, row, col) {
+                        'createdCell': function (td, cellData, rowData, row, col) {
                             $(td).attr('nowrap', 'nowrap');
                         },
-                        "orderable": false
+                        'orderable': false,
                     },
                     // Event Type
                     {
-                        "targets": 1,
-                        "render": function (data, type, row) {
+                        'targets': 1,
+                        'render': function (data, type, row) {
                             return '<i class="fas ' + row[7] + '"></i> ' + row[2];
                         },
-                        "createdCell": function (td, cellData, rowData, row, col) {
+                        'createdCell': function (td, cellData, rowData, row, col) {
                             $(td).attr('nowrap', 'nowrap');
                         },
-                        "orderable": false
+                        'orderable': false,
                     },
                     // Location (IP)
                     {
-                        "targets": 2,
-                        "render": function (data, type, row) {
+                        'targets': 2,
+                        'render': function (data, type, row) {
 
                             if (row[3] === row[6]) {
                                 return '<span class="font-weight-bold" data-toggle="tooltip" data-placement="left" title="Your current IP">' + row[8] + '</span>';
                             }
                             return row[8];
                         },
-                        "orderable": false
+                        'orderable': false,
                     },
                     // User Agent
                     {
-                        "targets": 3,
-                        "render": function (data, type, row) {
+                        'targets': 3,
+                        'render': function (data, type, row) {
                             return '<span data-toggle="tooltip" data-placement="left" title="' + row[4] + '">' + row[5] + '</span>';
                         },
-                        "createdCell": function (td, cellData, rowData, row, col) {
+                        'createdCell': function (td, cellData, rowData, row, col) {
                             $(td).attr('nowrap', 'nowrap');
                         },
-                        "orderable": false
-                    }
-                ]
-            }
+                        'orderable': false,
+                    },
+                ],
+            },
         });
     }
 
@@ -112,40 +112,40 @@ if ($settingsPage.length > 0) {
 
         $('#donations table.table').gdbTable({
             tableOptions: {
-                "order": [[0, 'desc']],
-                "columnDefs": [
+                'order': [[0, 'desc']],
+                'columnDefs': [
                     // Time
                     {
-                        "targets": 0,
-                        "render": function (data, type, row) {
+                        'targets': 0,
+                        'render': function (data, type, row) {
                             return '<span data-toggle="tooltip" data-placement="left" title="' + row[1] + '" data-livestamp="' + row[0] + '">' + row[1] + '</span>';
                         },
-                        "createdCell": function (td, cellData, rowData, row, col) {
+                        'createdCell': function (td, cellData, rowData, row, col) {
                             $(td).attr('nowrap', 'nowrap');
                         },
-                        "orderable": false
+                        'orderable': false,
                     },
                     // Type
                     {
-                        "targets": 1,
-                        "render": function (data, type, row) {
+                        'targets': 1,
+                        'render': function (data, type, row) {
                             return '$ ' + (row[2] / 100).toLocaleString();
                         },
-                        "createdCell": function (td, cellData, rowData, row, col) {
+                        'createdCell': function (td, cellData, rowData, row, col) {
                             $(td).attr('nowrap', 'nowrap');
                         },
-                        "orderable": false
+                        'orderable': false,
                     },
                     // Source
                     {
-                        "targets": 2,
-                        "render": function (data, type, row) {
+                        'targets': 2,
+                        'render': function (data, type, row) {
                             return row[3];
                         },
-                        "orderable": false
+                        'orderable': false,
                     },
-                ]
-            }
+                ],
+            },
         });
     }
 }

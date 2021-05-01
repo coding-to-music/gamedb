@@ -4,7 +4,7 @@ if ($('#bundles-page').length > 0) {
     $('select.form-control-chosen').chosen({
         disable_search_threshold: 5,
         allow_single_deselect: true,
-        max_selected_options: 10
+        max_selected_options: 10,
     });
 
     // Discount
@@ -19,7 +19,7 @@ if ($('#bundles-page').length > 0) {
         },
         format: {
             to: (v) => parseFloat(v).toFixed(0),
-            from: (v) => parseFloat(v).toFixed(0)
+            from: (v) => parseFloat(v).toFixed(0),
         },
     });
 
@@ -35,7 +35,7 @@ if ($('#bundles-page').length > 0) {
         },
         format: {
             to: (v) => parseFloat(v).toFixed(0),
-            from: (v) => parseFloat(v).toFixed(0)
+            from: (v) => parseFloat(v).toFixed(0),
         },
     });
 
@@ -90,32 +90,32 @@ if ($('#bundles-page').length > 0) {
 
     //
     const options = {
-        "order": [[6, 'desc']],
-        "createdRow": function (row, data, dataIndex) {
+        'order': [[6, 'desc']],
+        'createdRow': function (row, data, dataIndex) {
             $(row).attr('data-link', data[2]);
         },
-        "columnDefs": [
+        'columnDefs': [
             // Icon / Bundle Name
             {
-                "targets": 0,
-                "render": function (data, type, row) {
+                'targets': 0,
+                'render': function (data, type, row) {
 
                     let tagName = row[1];
                     if (row[7]) {
                         tagName = tagName + ' <span class="badge badge-success">Lowest</span>';
                     }
 
-                    return '<a href="' + row[2] + '" class="icon-name"><div class="icon"><img src="/assets/img/no-app-image-square.jpg" alt="' + row[1] + '"></div><div class="name">' + tagName + '</div></a>'
+                    return '<a href="' + row[2] + '" class="icon-name"><div class="icon"><img src="/assets/img/no-app-image-square.jpg" alt="' + row[1] + '"></div><div class="name">' + tagName + '</div></a>';
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
+                'createdCell': function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');
                 },
-                "orderable": false,
+                'orderable': false,
             },
             // Discount
             {
-                "targets": 1,
-                "render": function (data, type, row) {
+                'targets': 1,
+                'render': function (data, type, row) {
 
                     let discount = row[13] + '%';
 
@@ -123,17 +123,17 @@ if ($('#bundles-page').length > 0) {
                         discount += ' <small>' + row[4] + '%<small>';
                     }
 
-                    return discount
+                    return discount;
                 },
-                "orderSequence": ["asc", "desc"],
+                'orderSequence': ['asc', 'desc'],
             },
             // Price
             {
-                "targets": 2,
-                "createdCell": function (td, cellData, rowData, row, col) {
+                'targets': 2,
+                'createdCell': function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
-                "render": function (data, type, row) {
+                'render': function (data, type, row) {
                     if (user.prodCC in row[9]) {
 
                         let price = row[9][user.prodCC];
@@ -146,72 +146,72 @@ if ($('#bundles-page').length > 0) {
                     }
                     return '-';
                 },
-                "orderSequence": ["asc", "desc"],
+                'orderSequence': ['asc', 'desc'],
             },
             // Items
             {
-                "targets": 3,
-                "render": function (data, type, row) {
+                'targets': 3,
+                'render': function (data, type, row) {
                     return row[5].toLocaleString();
                 },
-                "orderSequence": ["desc", "asc"],
+                'orderSequence': ['desc', 'asc'],
             },
             // Giftable
             {
-                "targets": 4,
-                "render": function (data, type, row) {
+                'targets': 4,
+                'render': function (data, type, row) {
                     if (row[6]) {
                         return '<i class="fas fa-check text-success fa-fw"></i>';
                     } else {
                         return '<i class="fas fa-times text-danger fa-fw"></i>';
                     }
                 },
-                "orderable": false,
+                'orderable': false,
             },
             // Complete the set
             {
-                "targets": 5,
-                "render": function (data, type, row) {
+                'targets': 5,
+                'render': function (data, type, row) {
                     if (row[12] === 'cts') {
                         return '<i class="fas fa-check text-success fa-fw"></i>';
                     } else {
                         return '<i class="fas fa-times text-danger fa-fw"></i>';
                     }
                 },
-                "orderable": false,
+                'orderable': false,
             },
             // First Seen
             {
-                "targets": 6,
-                "createdCell": function (td, cellData, rowData, row, col) {
+                'targets': 6,
+                'createdCell': function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
-                "render": function (data, type, row) {
+                'render': function (data, type, row) {
                     return '<span data-livestamp="' + row[3] + '"></span>';
                 },
-                "orderSequence": ["desc"],
+                'orderSequence': ['desc'],
             },
             // Link
             {
-                "targets": 7,
-                "render": function (data, type, row) {
+                'targets': 7,
+                'render': function (data, type, row) {
                     if (row[8]) {
                         return '<a href="' + row[8] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';
                     }
                     return '';
                 },
-                "orderable": false,
+                'orderable': false,
             },
             // Search score
             {
-                "targets": 8,
-                "render": function (data, type, row) {
+                'targets': 8,
+                'render': function (data, type, row) {
                     return row[10];
                 },
-                "orderable": false,
-                "visible": user.isLocal,
+                'orderable': false,
+                'visible': user.isLocal,
             },
-        ]
+        ],
     };
 
 
@@ -225,7 +225,7 @@ if ($('#bundles-page').length > 0) {
         $('#giftable'),
         $('#onsale'),
     ];
-    const original = serialiseTable(searchFields, options.order)
+    const original = serialiseTable(searchFields, options.order);
 
     const dt = $table.gdbTable({tableOptions: options, searchFields: searchFields});
 

@@ -9,7 +9,7 @@ if ($('#players-page').length > 0) {
     $('select.form-control-chosen').chosen({
         disable_search_threshold: 5,
         allow_single_deselect: true,
-        max_selected_options: 1
+        max_selected_options: 1,
     });
 
     $country.on('change', function (e) {
@@ -19,7 +19,7 @@ if ($('#players-page').length > 0) {
     function toggleStateDropDown() {
 
         const countryVal = $country.val();
-        const isContient = countryVal.startsWith("c-");
+        const isContient = countryVal.startsWith('c-');
 
         if (isContient) {
             $stateContainer.hide();
@@ -27,7 +27,7 @@ if ($('#players-page').length > 0) {
         }
 
         $.ajax({
-            type: "GET",
+            type: 'GET',
             url: '/players/states.json?cc=' + countryVal,
             dataType: 'json',
             success: function (data, textStatus, jqXHR) {
@@ -54,94 +54,94 @@ if ($('#players-page').length > 0) {
 
                 $state.val('');
                 $stateContainer.show();
-                $state.trigger("chosen:updated");
+                $state.trigger('chosen:updated');
             },
         });
     }
 
     const options = {
-        "language": {
-            "zeroRecords": function () {
+        'language': {
+            'zeroRecords': function () {
                 return 'Players can be searched for using their username or vanity URL. If a player is missing, <a href="/players/add?search=' + $search.val() + '">add them here</a>.';
             },
         },
-        "order": [getOrder(window.location.hash)],
-        "createdRow": function (row, data, dataIndex) {
+        'order': [getOrder(window.location.hash)],
+        'createdRow': function (row, data, dataIndex) {
             $(row).attr('data-link', data[13]);
         },
-        "columnDefs": [
+        'columnDefs': [
             // Rank
             {
-                "targets": 0,
-                "render": function (data, type, row) {
+                'targets': 0,
+                'render': function (data, type, row) {
                     return row[0];
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
-                    $(td).addClass('font-weight-bold')
+                'createdCell': function (td, cellData, rowData, row, col) {
+                    $(td).addClass('font-weight-bold');
                 },
-                "orderable": false,
+                'orderable': false,
             },
             // Flag
             {
-                "targets": 1,
-                "render": function (data, type, row) {
+                'targets': 1,
+                'render': function (data, type, row) {
                     if (row[11]) {
                         const img = '<img data-lazy="' + row[11] + '" alt="" data-lazy-alt="' + row[12] + '" class="wide" data-toggle="tooltip" data-placement="left" data-lazy-title="' + row[12] + '">';
                         return '<a href="/players?country=' + row[19] + '">' + img + '</a>';
                     }
                     return '';
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
+                'createdCell': function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');
                 },
-                "orderable": false,
+                'orderable': false,
             },
             // Player
             {
-                "targets": 2,
-                "render": function (data, type, row) {
-                    return '<a href="' + row[13] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[3] + '" alt="" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[23] + '</div></a>'
+                'targets': 2,
+                'render': function (data, type, row) {
+                    return '<a href="' + row[13] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[3] + '" alt="" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[23] + '</div></a>';
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
-                    $(td).addClass('img')
+                'createdCell': function (td, cellData, rowData, row, col) {
+                    $(td).addClass('img');
                 },
-                "orderable": false,
+                'orderable': false,
             },
             // Avatar 2 / Level
             {
-                "targets": 3,
-                "render": function (data, type, row) {
-                    return '<div class="icon-name"><div class="icon"><div class="' + row[4] + '"></div></div><div class="name min nowrap">' + row[5].toLocaleString() + '</div></div>'
+                'targets': 3,
+                'render': function (data, type, row) {
+                    return '<div class="icon-name"><div class="icon"><div class="' + row[4] + '"></div></div><div class="name min nowrap">' + row[5].toLocaleString() + '</div></div>';
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
+                'createdCell': function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');
                 },
-                "orderSequence": ["desc"],
+                'orderSequence': ['desc'],
             },
             // Badges
             {
-                "targets": 4,
-                "render": function (data, type, row) {
+                'targets': 4,
+                'render': function (data, type, row) {
                     return row[7].toLocaleString();
                 },
-                "orderSequence": ["desc"],
+                'orderSequence': ['desc'],
             },
             // Games
             {
-                "targets": 5,
-                "render": function (data, type, row) {
+                'targets': 5,
+                'render': function (data, type, row) {
 
                     if (row[6]) {
                         return row[6].toLocaleString();
                     }
                     return $lockIcon;
                 },
-                "orderSequence": ["desc"],
+                'orderSequence': ['desc'],
             },
             // Time
             {
-                "targets": 6,
-                "render": function (data, type, row) {
+                'targets': 6,
+                'render': function (data, type, row) {
 
                     if (row[8] === '-') {
                         return $lockIcon;
@@ -149,7 +149,7 @@ if ($('#players-page').length > 0) {
 
                     return row[8];
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
+                'createdCell': function (td, cellData, rowData, row, col) {
 
                     if (rowData[8] !== '-') {
                         const $td = $(td);
@@ -159,115 +159,115 @@ if ($('#players-page').length > 0) {
                         $td.attr('title', rowData[9]);
                     }
                 },
-                "orderSequence": ["desc"],
+                'orderSequence': ['desc'],
             },
             // Game Bans
             {
-                "targets": 7,
-                "render": function (data, type, row) {
+                'targets': 7,
+                'render': function (data, type, row) {
                     return row[15].toLocaleString();
                 },
-                "orderSequence": ["desc"],
+                'orderSequence': ['desc'],
             },
             // VAC Bans
             {
-                "targets": 8,
-                "render": function (data, type, row) {
+                'targets': 8,
+                'render': function (data, type, row) {
                     return row[16].toLocaleString();
                 },
-                "orderSequence": ["desc"],
+                'orderSequence': ['desc'],
             },
             // Last Ban
             {
-                "targets": 9,
-                "render": function (data, type, row) {
+                'targets': 9,
+                'render': function (data, type, row) {
                     if (row[17] > 0) {
                         return '<span data-toggle="tooltip" data-placement="left" title="' + row[18] + '" data-livestamp="' + row[17] + '"></span>';
                     }
                     return '';
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
+                'createdCell': function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
-                "orderSequence": ["desc"],
+                'orderSequence': ['desc'],
             },
             // Achievements
             {
-                "targets": 10,
-                "render": function (data, type, row) {
+                'targets': 10,
+                'render': function (data, type, row) {
                     return row[21].toLocaleString();
                 },
-                "orderSequence": ["desc"],
+                'orderSequence': ['desc'],
             },
             // Achievements
             {
-                "targets": 11,
-                "render": function (data, type, row) {
+                'targets': 11,
+                'render': function (data, type, row) {
                     return row[22].toLocaleString();
                 },
-                "orderSequence": ["desc"],
+                'orderSequence': ['desc'],
             },
             // Foil Badges
             {
-                "targets": 12,
-                "render": function (data, type, row) {
+                'targets': 12,
+                'render': function (data, type, row) {
                     return row[25].toLocaleString();
                 },
-                "orderSequence": ["desc"],
+                'orderSequence': ['desc'],
             },
             // Awards Given Count
             {
-                "targets": 13,
-                "render": function (data, type, row) {
+                'targets': 13,
+                'render': function (data, type, row) {
                     return row[26].toLocaleString();
                 },
-                "orderSequence": ["desc"],
+                'orderSequence': ['desc'],
             },
             // Awards Given Points
             {
-                "targets": 14,
-                "render": function (data, type, row) {
+                'targets': 14,
+                'render': function (data, type, row) {
                     return row[27].toLocaleString();
                 },
-                "orderSequence": ["desc"],
+                'orderSequence': ['desc'],
             },
             // Awards Received Count
             {
-                "targets": 15,
-                "render": function (data, type, row) {
+                'targets': 15,
+                'render': function (data, type, row) {
                     return row[28].toLocaleString();
                 },
-                "orderSequence": ["desc"],
+                'orderSequence': ['desc'],
             },
             // Awards Received Points
             {
-                "targets": 16,
-                "render": function (data, type, row) {
+                'targets': 16,
+                'render': function (data, type, row) {
                     return row[29].toLocaleString();
                 },
-                "orderSequence": ["desc"],
+                'orderSequence': ['desc'],
             },
             // Link
             {
-                "targets": 17,
-                "render": function (data, type, row) {
+                'targets': 17,
+                'render': function (data, type, row) {
                     if (row[14]) {
                         return '<a href="' + row[14] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';
                     }
                     return '';
                 },
-                "orderable": false,
+                'orderable': false,
             },
             // Search Score
             {
-                "targets": 18,
-                "render": function (data, type, row) {
+                'targets': 18,
+                'render': function (data, type, row) {
                     return row[24];
                 },
-                "orderable": false,
-                "visible": user.isLocal,
+                'orderable': false,
+                'visible': user.isLocal,
             },
-        ]
+        ],
     };
 
     let searchFields = [

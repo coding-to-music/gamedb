@@ -27,14 +27,14 @@ if ($homePage.length > 0) {
         // "sales": function () {
         //     loadSales('top-rated');
         // },
-        "top-players": function () {
+        'top-players': function () {
             homeTopPlayers('level');
         },
-        "new-players": homeNewPlayers,
-        "upcoming-games": homeUpcomingGames,
-        "new-releases": homeNewReleases,
-        "news": loadNewsSection,
-        "tweets": loadHomeTweets,
+        'new-players': homeNewPlayers,
+        'upcoming-games': homeUpcomingGames,
+        'new-releases': homeNewReleases,
+        'news': loadNewsSection,
+        'tweets': loadHomeTweets,
     });
 
     function loadHomeTweets() {
@@ -59,11 +59,11 @@ if ($homePage.length > 0) {
                                 {
                                     '<>': 'p', 'html': '<i class="fas fa-star text-warning"></i> ${text}',
                                 },
-                            ]
+                            ],
                         },
                         {
                             prepend: false,
-                        }
+                        },
                     );
                 }
             },
@@ -75,7 +75,7 @@ if ($homePage.length > 0) {
         const $news = $('#news .card-body');
 
         $.ajax({
-            type: "GET",
+            type: 'GET',
             url: '/home/news.html',
             dataType: 'html',
             success: function (data, textStatus, jqXHR) {
@@ -103,29 +103,29 @@ if ($homePage.length > 0) {
                                     },
                                     {
                                         '<>': 'div', 'class': 'name', 'html': '${name}',
-                                    }
-                                ]
-                            }
-                        ]
+                                    },
+                                ],
+                            },
+                        ],
                     },
                     {
                         '<>': 'td', 'nowrap': 'nowrap', 'html': [
                             {
                                 '<>': 'span', 'data-livestamp': '${created_at}', 'text': (instantTime ? 'a few seconds ago' : ''),
-                            }
+                            },
                         ],
                     },
                     {
                         '<>': 'td', 'html': [
                             {
                                 '<>': 'a', 'href': '${community_link}', 'target': '_blank', 'rel': 'noopener', 'html': [
-                                    {'<>': 'i', 'class': 'fas fa-link'}
+                                    {'<>': 'i', 'class': 'fas fa-link'},
                                 ],
-                            }
+                            },
                         ],
                     },
-                ]
-            }
+                ],
+            };
         };
 
         $.ajax({
@@ -191,10 +191,10 @@ if ($homePage.length > 0) {
                                                     '<>': 'div', 'class': 'icon', 'html': [{'<>': 'img', 'data-lazy': '${icon}', 'alt': '', 'data-lazy-alt': '${name}'}],
                                                 },
                                                 {
-                                                    '<>': 'div', 'class': 'name', 'html': '${name}'
-                                                }
-                                            ]
-                                        }
+                                                    '<>': 'div', 'class': 'name', 'html': '${name}',
+                                                },
+                                            ],
+                                        },
                                     ],
                                 },
                                 {
@@ -207,7 +207,7 @@ if ($homePage.length > 0) {
                                     '<>': 'td', 'nowrap': 'nowrap', 'class': 'nowrap', 'html': [
                                         {
                                             '<>': 'span', 'data-toggle': 'tooltip', 'data-placement': 'left', 'data-livestamp': '${ends}',
-                                        }
+                                        },
                                     ],
                                 },
                                 {
@@ -216,16 +216,16 @@ if ($homePage.length > 0) {
                                             '<>': 'a', 'href': '${store_link}', 'target': '_blank', 'rel': 'noopener', 'html': [
                                                 {
                                                     '<>': 'i', 'class': 'fas fa-link',
-                                                }
+                                                },
                                             ],
                                         },
-                                    ]
+                                    ],
                                 },
-                            ]
+                            ],
                         },
                         {
                             prepend: false,
-                        }
+                        },
                     );
 
                     observeLazyImages($container.find('img[data-lazy]'));
@@ -259,7 +259,7 @@ if ($homePage.length > 0) {
 
                     const tds = [
                         {
-                            '<>': 'td', 'class': 'font-weight-bold', 'html': '${rank}'
+                            '<>': 'td', 'class': 'font-weight-bold', 'html': '${rank}',
                         },
                         {
                             '<>': 'td', 'class': 'img', 'html': [
@@ -270,10 +270,10 @@ if ($homePage.length > 0) {
                                         },
                                         {
                                             '<>': 'div', 'class': 'name', 'html': '${name}',
-                                        }
-                                    ]
-                                }
-                            ]
+                                        },
+                                    ],
+                                },
+                            ],
                         },
                     ];
 
@@ -286,47 +286,47 @@ if ($homePage.length > 0) {
                                 '<>': 'td', 'class': 'img', 'html': '<div class="icon-name"><div class="icon"><div class="${class}"></div></div><div class="name min nowrap">${level}</div></div>',
                             });
                             tds.push({
-                                '<>': 'td', 'nowrap': 'nowrap', 'html': "${badges}"
+                                '<>': 'td', 'nowrap': 'nowrap', 'html': '${badges}',
                             });
                             $change1.html('Level');
                             $change2.html('Badges');
                             break;
                         case 'games':
                             tds.push({
-                                '<>': 'td', 'nowrap': 'nowrap', 'html': "${games}"
+                                '<>': 'td', 'nowrap': 'nowrap', 'html': '${games}',
                             });
                             tds.push({
-                                '<>': 'td', 'nowrap': 'nowrap', 'html': "${playtime}"
+                                '<>': 'td', 'nowrap': 'nowrap', 'html': '${playtime}',
                             });
                             $change1.html('Games');
                             $change2.html('Playtime');
                             break;
                         case 'bans':
                             tds.push({
-                                '<>': 'td', 'nowrap': 'nowrap', 'html': "${game_bans}"
+                                '<>': 'td', 'nowrap': 'nowrap', 'html': '${game_bans}',
                             });
                             tds.push({
-                                '<>': 'td', 'nowrap': 'nowrap', 'html': "${vac_bans}"
+                                '<>': 'td', 'nowrap': 'nowrap', 'html': '${vac_bans}',
                             });
                             $change1.html('Game Bans');
                             $change2.html('VAC Bans');
                             break;
                         case 'profile':
                             tds.push({
-                                '<>': 'td', 'nowrap': 'nowrap', 'html': "${friends}"
+                                '<>': 'td', 'nowrap': 'nowrap', 'html': '${friends}',
                             });
                             tds.push({
-                                '<>': 'td', 'nowrap': 'nowrap', 'html': "${comments}"
+                                '<>': 'td', 'nowrap': 'nowrap', 'html': '${comments}',
                             });
                             $change1.html('Friends');
                             $change2.html('Comments');
                             break;
                         case 'awards':
                             tds.push({
-                                '<>': 'td', 'nowrap': 'nowrap', 'html': "${awards_sent}"
+                                '<>': 'td', 'nowrap': 'nowrap', 'html': '${awards_sent}',
                             });
                             tds.push({
-                                '<>': 'td', 'nowrap': 'nowrap', 'html': "${awards_received}"
+                                '<>': 'td', 'nowrap': 'nowrap', 'html': '${awards_received}',
                             });
                             $change1.html('Given');
                             $change2.html('Received');
@@ -340,7 +340,7 @@ if ($homePage.length > 0) {
                         },
                         {
                             prepend: false,
-                        }
+                        },
                     );
 
                     observeLazyImages($container.find('img[data-lazy]'));
@@ -353,7 +353,7 @@ if ($homePage.length > 0) {
         yAxis: {
             allowDecimals: false,
             title: {
-                text: ''
+                text: '',
             },
             labels: {
                 formatter: function () {
@@ -365,7 +365,7 @@ if ($homePage.length > 0) {
         plotOptions: {
             series: {
                 cursor: 'pointer',
-            }
+            },
         },
         legend: {
             enabled: false,
@@ -375,7 +375,7 @@ if ($homePage.length > 0) {
     function homeNewReleases() {
 
         $.ajax({
-            type: "GET",
+            type: 'GET',
             url: '/home/new-releases.json',
             dataType: 'json',
             cache: true,
@@ -402,15 +402,15 @@ if ($homePage.length > 0) {
                                 events: {
                                     click: function () {
                                         location.href = data.apps[this.series.userOptions.id].path;
-                                    }
-                                }
-                            }
-                        }
+                                    },
+                                },
+                            },
+                        },
                     },
                     tooltip: {
                         formatter: function () {
                             return this.series.name + ' had ' + this.y.toLocaleString()
-                                + ' players on ' + moment(this.key).format("dddd DD MMM YYYY @ HH:00");
+                                + ' players on ' + moment(this.key).format('dddd DD MMM YYYY @ HH:00');
                         },
                     },
                     series: series,
@@ -434,7 +434,7 @@ if ($homePage.length > 0) {
     function homeUpcomingGames() {
 
         $.ajax({
-            type: "GET",
+            type: 'GET',
             url: '/home/upcoming-games.json',
             dataType: 'json',
             cache: true,
@@ -462,15 +462,15 @@ if ($homePage.length > 0) {
                                 events: {
                                     click: function () {
                                         location.href = data.apps[this.series.userOptions.group].path;
-                                    }
-                                }
-                            }
-                        }
+                                    },
+                                },
+                            },
+                        },
                     },
                     tooltip: {
                         formatter: function () {
                             return this.series.name + ' had ' + this.y.toLocaleString()
-                                + ' followers on ' + moment(this.key).format("dddd DD MMM");
+                                + ' followers on ' + moment(this.key).format('dddd DD MMM');
                         },
                     },
                     series: series,
@@ -499,7 +499,7 @@ if ($homePage.length > 0) {
                 let max = 0;
                 data['players'][$(this).index()]['value']['max_player_count'].forEach(function (item) {
                     max = Math.max(max, item[1]);
-                })
+                });
                 hc.yAxis[0].update({max: max});
             }
 

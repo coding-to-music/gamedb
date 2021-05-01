@@ -7,7 +7,7 @@ if ($('#apps-page').length > 0) {
         $('select.form-control-chosen').chosen({
             disable_search_threshold: 5,
             allow_single_deselect: true,
-            max_selected_options: 10
+            max_selected_options: 10,
         });
 
         // Price slider
@@ -22,7 +22,7 @@ if ($('#apps-page').length > 0) {
             },
             format: {
                 to: (v) => parseFloat(v).toFixed(2),
-                from: (v) => parseFloat(v).toFixed(2)
+                from: (v) => parseFloat(v).toFixed(2),
             },
         });
 
@@ -34,11 +34,11 @@ if ($('#apps-page').length > 0) {
             step: 1,
             range: {
                 'min': 0,
-                'max': 100
+                'max': 100,
             },
             format: {
                 to: (v) => parseFloat(v).toFixed(0),
-                from: (v) => parseFloat(v).toFixed(0)
+                from: (v) => parseFloat(v).toFixed(0),
             },
         });
 
@@ -66,84 +66,84 @@ if ($('#apps-page').length > 0) {
 
         // Setup datatable
         const options = {
-            "order": [[2, 'desc']],
-            "createdRow": function (row, data, dataIndex) {
+            'order': [[2, 'desc']],
+            'createdRow': function (row, data, dataIndex) {
                 $(row).attr('data-app-id', data[1]);
                 $(row).attr('data-link', data[4]);
             },
-            "columnDefs": [
+            'columnDefs': [
                 // Rank
                 {
-                    "targets": 0,
-                    "render": function (data, type, row) {
+                    'targets': 0,
+                    'render': function (data, type, row) {
                         return row[0].toLocaleString();
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
                 // Icon / App Name
                 {
-                    "targets": 1,
-                    "render": function (data, type, row) {
-                        return '<a href="' + row[4] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[3] + '" alt="" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[11] + '</div></a>'
+                    'targets': 1,
+                    'render': function (data, type, row) {
+                        return '<a href="' + row[4] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[3] + '" alt="" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[11] + '</div></a>';
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
                 // Players
                 {
-                    "targets": 2,
-                    "render": function (data, type, row) {
+                    'targets': 2,
+                    'render': function (data, type, row) {
                         return row[7].toLocaleString();
                     },
-                    "orderSequence": ["desc"],
+                    'orderSequence': ['desc'],
                 },
                 // Followers
                 {
-                    "targets": 3,
-                    "render": function (data, type, row) {
+                    'targets': 3,
+                    'render': function (data, type, row) {
                         return row[9].toLocaleString();
                     },
-                    "orderSequence": ["desc"],
+                    'orderSequence': ['desc'],
                 },
                 // Score
                 {
-                    "targets": 4,
-                    "render": function (data, type, row) {
+                    'targets': 4,
+                    'render': function (data, type, row) {
                         return row[5] + '%';
                     },
-                    "orderSequence": ["desc"],
+                    'orderSequence': ['desc'],
                 },
                 // Price
                 {
-                    "targets": 5,
-                    "render": function (data, type, row) {
+                    'targets': 5,
+                    'render': function (data, type, row) {
                         return row[6];
                     },
-                    "orderSequence": ["desc"],
+                    'orderSequence': ['desc'],
                 },
                 // Link
                 {
-                    "targets": 6,
-                    "render": function (data, type, row) {
+                    'targets': 6,
+                    'render': function (data, type, row) {
                         if (row[8]) {
                             return '<a href="' + row[8] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';
                         }
                         return '';
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
                 // Search Score
                 {
-                    "targets": 7,
-                    "render": function (data, type, row) {
+                    'targets': 7,
+                    'render': function (data, type, row) {
                         return row[10];
                     },
-                    "orderable": false,
-                    "visible": user.isLocal,
+                    'orderable': false,
+                    'visible': user.isLocal,
                 },
-            ]
+            ],
         };
 
         // Default form inputs
@@ -172,7 +172,7 @@ if ($('#apps-page').length > 0) {
 
         $('table.table').gdbTable({
             tableOptions: options,
-            searchFields: searchFields
+            searchFields: searchFields,
         });
 
     })(jQuery, document);

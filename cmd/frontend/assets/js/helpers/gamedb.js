@@ -13,7 +13,7 @@ function highLightOwnedGames($element) {
                 $element.find('[data-app-id]').each(function () {
                     const id = $(this).attr('data-app-id');
                     if (games.indexOf(parseInt(id)) !== -1) {
-                        $(this).addClass('font-weight-bold')
+                        $(this).addClass('font-weight-bold');
                     }
                 });
             }
@@ -26,7 +26,7 @@ function highLightOwnedGames($element) {
                 $element.find('[data-group-id]').each(function () {
                     const id = $(this).attr('data-group-id');
                     if (groups.indexOf(id) !== -1) {
-                        $(this).addClass('font-weight-bold')
+                        $(this).addClass('font-weight-bold');
                     }
                 });
             }
@@ -39,7 +39,7 @@ function highLightOwnedGames($element) {
                 $element.find('[data-badge-id]').each(function () {
                     const id = $(this).attr('data-badge-id');
                     if (badges.indexOf(parseInt(id)) !== -1) {
-                        $(this).addClass('font-weight-bold')
+                        $(this).addClass('font-weight-bold');
                     }
                 });
             }

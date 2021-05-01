@@ -73,129 +73,129 @@ if ($playerPage.length > 0) {
     });
 
     loadAjaxOnObserve({
-        "all-games": loadPlayerLibraryTab,
-        "recent-games": loadPlayerLibraryStatsTab,
-        "details": loadPlayerHistory,
-        "badges-table": loadPlayerBadgesTab,
-        "friends-table": loadPlayerFriendsTab,
-        "groups-table": loadPlayerGroupsTab,
-        "wishlist-table": loadPlayerWishlistTab,
-        "achievements-table": loadPlayerAchievementsTab,
-        "achievement-influx-chart": loadPlayerAchievementsInfluxChart,
+        'all-games': loadPlayerLibraryTab,
+        'recent-games': loadPlayerLibraryStatsTab,
+        'details': loadPlayerHistory,
+        'badges-table': loadPlayerBadgesTab,
+        'friends-table': loadPlayerFriendsTab,
+        'groups-table': loadPlayerGroupsTab,
+        'wishlist-table': loadPlayerWishlistTab,
+        'achievements-table': loadPlayerAchievementsTab,
+        'achievement-influx-chart': loadPlayerAchievementsInfluxChart,
     });
 
     //
     function loadPlayerLibraryTab() {
 
         const options = {
-            "order": [[2, 'desc']],
-            "createdRow": function (row, data, dataIndex) {
+            'order': [[2, 'desc']],
+            'createdRow': function (row, data, dataIndex) {
                 $(row).attr('data-app-id', data[0]);
                 $(row).attr('data-link', data[7]);
             },
-            "columnDefs": [
+            'columnDefs': [
                 // Icon / App Name
                 {
-                    "targets": 0,
-                    "render": function (data, type, row) {
-                        return '<a href="' + row[7] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></a>'
+                    'targets': 0,
+                    'render': function (data, type, row) {
+                        return '<a href="' + row[7] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></a>';
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
                     },
                     'orderSequence': ['asc', 'desc'],
                 },
                 // Price
                 {
-                    "targets": 1,
-                    "render": function (data, type, row) {
+                    'targets': 1,
+                    'render': function (data, type, row) {
                         return row[5];
                     },
                     'orderSequence': ['desc', 'asc'],
                 },
                 // Time
                 {
-                    "targets": 2,
-                    "render": function (data, type, row) {
+                    'targets': 2,
+                    'render': function (data, type, row) {
                         return row[4];
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');
                     },
                     'orderSequence': ['desc', 'asc'],
                 },
                 // Price/Time
                 {
-                    "targets": 3,
-                    "render": function (data, type, row) {
+                    'targets': 3,
+                    'render': function (data, type, row) {
                         return row[6];
                     },
                     'orderSequence': ['desc', 'asc'],
                 },
                 // Achievements
                 {
-                    "targets": 4,
-                    "render": function (data, type, row) {
+                    'targets': 4,
+                    'render': function (data, type, row) {
                         if (row[9] > 0) {
                             return row[8].toLocaleString() + ' / ' + row[9].toLocaleString();
                         }
                         return '-';
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         rowData[10] = Math.ceil(rowData[10]);
                         $(td).css('background', 'linear-gradient(to right, rgba(0,0,0,.15) ' + rowData[10] + '%, transparent ' + rowData[10] + '%)');
                         $(td).addClass('thin');
                     },
-                    "orderSequence": ['desc', 'asc'],
+                    'orderSequence': ['desc', 'asc'],
                 },
-            ]
+            ],
         };
 
         $('#all-games').gdbTable({
             tableOptions: options,
             searchFields: [
                 $('#player-games-search'),
-            ]
+            ],
         });
     }
 
     function loadPlayerLibraryStatsTab() {
 
         const recentOptions = {
-            "order": [[1, 'desc']],
-            "createdRow": function (row, data, dataIndex) {
+            'order': [[1, 'desc']],
+            'createdRow': function (row, data, dataIndex) {
                 $(row).attr('data-app-id', data[0]);
                 $(row).attr('data-link', data[5]);
             },
-            "columnDefs": [
+            'columnDefs': [
                 // Icon / App Name
                 {
-                    "targets": 0,
-                    "render": function (data, type, row) {
-                        return '<a href="' + row[5] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[1] + '" alt="" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[2] + '</div></a>'
+                    'targets': 0,
+                    'render': function (data, type, row) {
+                        return '<a href="' + row[5] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[1] + '" alt="" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[2] + '</div></a>';
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
-                    }
+                    },
                 },
                 // Price
                 {
-                    "targets": 1,
-                    "render": function (data, type, row) {
+                    'targets': 1,
+                    'render': function (data, type, row) {
                         return row[3].toLocaleString();
                     },
                 },
                 // Time
                 {
-                    "targets": 2,
-                    "render": function (data, type, row) {
+                    'targets': 2,
+                    'render': function (data, type, row) {
                         return row[4].toLocaleString();
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');
-                    }
+                    },
                 },
-            ]
+            ],
         };
 
         $('#recent-games').gdbTable({
@@ -206,7 +206,7 @@ if ($playerPage.length > 0) {
     function loadPlayerHistory() {
 
         $.ajax({
-            type: "GET",
+            type: 'GET',
             url: '/players/' + $playerPage.attr('data-id') + '/history.json',
             dataType: 'json',
             success: function (data, textStatus, jqXHR) {
@@ -269,7 +269,7 @@ if ($playerPage.length > 0) {
                             data: data['max_games_rank'],
                             marker: {symbol: 'circle'},
                             yAxis: 1,
-                        }
+                        },
                     ],
                     'p': [
                         {
@@ -297,7 +297,7 @@ if ($playerPage.length > 0) {
                             data: data['max_achievements_rank'],
                             marker: {symbol: 'circle'},
                             yAxis: 1,
-                        }
+                        },
                     ],
                     'c': [
                         {
@@ -325,13 +325,13 @@ if ($playerPage.length > 0) {
                             data: data['max_awards_received_points_rank'],
                             marker: {symbol: 'circle'},
                             yAxis: 1,
-                        }
+                        },
                     ],
                 };
 
                 for (let k in charts) {
 
-                    const id = k + '-chart'
+                    const id = k + '-chart';
 
                     if (charts.hasOwnProperty(k)) {
 
@@ -343,14 +343,14 @@ if ($playerPage.length > 0) {
                                 // Value
                                 {
                                     labels: {
-                                        enabled: false
+                                        enabled: false,
                                     },
                                 },
                                 // Rank
                                 {
                                     allowDecimals: false,
                                     title: {
-                                        text: ''
+                                        text: '',
                                     },
                                     reversed: true,
                                     min: 1,
@@ -362,11 +362,11 @@ if ($playerPage.length > 0) {
 
                                     switch (true) {
                                         case this.series.name === 'Playtime':
-                                            return this.y.toLocaleString() + ' minutes played on ' + moment(this.key).format("dddd DD MMM YYYY");
-                                        case this.series.name.endsWith("Rank"):
-                                            return ordinal(this.y) + ' ' + this.series.name + ' on ' + moment(this.key).format("dddd DD MMM YYYY");
+                                            return this.y.toLocaleString() + ' minutes played on ' + moment(this.key).format('dddd DD MMM YYYY');
+                                        case this.series.name.endsWith('Rank'):
+                                            return ordinal(this.y) + ' ' + this.series.name + ' on ' + moment(this.key).format('dddd DD MMM YYYY');
                                         default:
-                                            return this.y.toLocaleString() + ' ' + this.series.name + ' on ' + moment(this.key).format("dddd DD MMM YYYY");
+                                            return this.y.toLocaleString() + ' ' + this.series.name + ' on ' + moment(this.key).format('dddd DD MMM YYYY');
                                     }
                                 },
                             },
@@ -383,18 +383,18 @@ if ($playerPage.length > 0) {
     function loadPlayerBadgesTab() {
 
         const options = {
-            "order": [[1, 'desc']],
-            "createdRow": function (row, data, dataIndex) {
+            'order': [[1, 'desc']],
+            'createdRow': function (row, data, dataIndex) {
                 if (data[0]) {
                     $(row).attr('data-app-id', data[0]);
                 }
                 $(row).attr('data-link', data[2]);
             },
-            "columnDefs": [
+            'columnDefs': [
                 // Icon / App Name
                 {
-                    "targets": 0,
-                    "render": function (data, type, row) {
+                    'targets': 0,
+                    'render': function (data, type, row) {
 
                         let name = row[1];
                         if (row[9]) {
@@ -407,44 +407,44 @@ if ($playerPage.length > 0) {
                             name += '<span class="badge badge-success float-right ml-1">Foil</span>';
                         }
 
-                        return '<a href="' + row[2] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[5] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + name + '</div></a>'
+                        return '<a href="' + row[2] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[5] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + name + '</div></a>';
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
                 // Level / XP
                 {
-                    "targets": 1,
-                    "render": function (data, type, row) {
+                    'targets': 1,
+                    'render': function (data, type, row) {
                         return row[6].toLocaleString() + ' (' + row[8].toLocaleString() + 'xp)';
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');
                     },
-                    "orderSequence": ['desc', 'asc'],
+                    'orderSequence': ['desc', 'asc'],
                 },
                 // Scarcity
                 {
-                    "targets": 2,
-                    "render": function (data, type, row) {
+                    'targets': 2,
+                    'render': function (data, type, row) {
                         return row[7].toLocaleString();
                     },
-                    "orderSequence": ['asc', 'desc'],
+                    'orderSequence': ['asc', 'desc'],
                 },
                 // Completion Time
                 {
-                    "targets": 3,
-                    "render": function (data, type, row) {
+                    'targets': 3,
+                    'render': function (data, type, row) {
                         return row[3].toLocaleString();
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');
                     },
-                    "orderSequence": ['desc', 'asc'],
+                    'orderSequence': ['desc', 'asc'],
                 },
-            ]
+            ],
         };
 
         $('#badges-table').gdbTable({
@@ -458,26 +458,26 @@ if ($playerPage.length > 0) {
     function loadPlayerFriendsTab() {
 
         const options = {
-            "order": [[1, 'desc'], [4, 'asc']],
-            "createdRow": function (row, data, dataIndex) {
+            'order': [[1, 'desc'], [4, 'asc']],
+            'createdRow': function (row, data, dataIndex) {
                 $(row).attr('data-link', data[1]);
             },
-            "columnDefs": [
+            'columnDefs': [
                 // Icon / Friend
                 {
-                    "targets": 0,
-                    "render": function (data, type, row) {
-                        return '<a href="' + row[1] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" data-src="/assets/img/no-player-image.jpg" alt="" data-lazy-alt="' + row[3] + '"></div><div class="name">' + row[3] + '</div></a>'
+                    'targets': 0,
+                    'render': function (data, type, row) {
+                        return '<a href="' + row[1] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" data-src="/assets/img/no-player-image.jpg" alt="" data-lazy-alt="' + row[3] + '"></div><div class="name">' + row[3] + '</div></a>';
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
                 // Level
                 {
-                    "targets": 1,
-                    "render": function (data, type, row) {
+                    'targets': 1,
+                    'render': function (data, type, row) {
 
                         if (row[4] === '' || row[4] === '-') {
                             $('#add-missing-friends').removeClass('d-none');
@@ -493,8 +493,8 @@ if ($playerPage.length > 0) {
                 },
                 // Games
                 {
-                    "targets": 2,
-                    "render": function (data, type, row) {
+                    'targets': 2,
+                    'render': function (data, type, row) {
                         if (!row[5]) {
                             return '-';
                         } else if (row[6] === 0) {
@@ -507,38 +507,38 @@ if ($playerPage.length > 0) {
                 },
                 // Co-op
                 {
-                    "targets": 3,
-                    "render": function (data, type, row) {
+                    'targets': 3,
+                    'render': function (data, type, row) {
                         if (row[6] > 0) {
                             return '<a href="/games/coop/' + $playerPage.attr('data-id') + ',' + row[0] + '">Co-op</a>';
                         }
                         return '';
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
                 // Friend Since
                 {
-                    "targets": 4,
-                    "render": function (data, type, row) {
+                    'targets': 4,
+                    'render': function (data, type, row) {
                         return row[7];
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');
                     },
                     'orderSequence': ['asc', 'desc'],
                 },
                 // Link
                 {
-                    "targets": 5,
-                    "render": function (data, type, row) {
+                    'targets': 5,
+                    'render': function (data, type, row) {
                         if (row[8]) {
                             return '<a href="' + row[8] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';
                         }
                         return '';
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
-            ]
+            ],
         };
 
         $('#friends-table').gdbTable({
@@ -549,41 +549,41 @@ if ($playerPage.length > 0) {
     function loadPlayerGroupsTab() {
 
         const options = {
-            "order": [[1, 'desc']],
-            "createdRow": function (row, data, dataIndex) {
+            'order': [[1, 'desc']],
+            'createdRow': function (row, data, dataIndex) {
                 $(row).attr('data-link', data[3]);
                 $(row).attr('data-group-id', data[0]);
             },
-            "columnDefs": [
+            'columnDefs': [
                 // Group
                 {
-                    "targets": 0,
-                    "render": function (data, type, row) {
+                    'targets': 0,
+                    'render': function (data, type, row) {
 
                         let badge = '';
                         if (row[7]) {
                             badge = '<span class="badge badge-success float-right">Primary</span>';
                         }
 
-                        return '<a href="' + row[3] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[4] + '" data-src="/assets/img/no-player-image.jpg" alt="" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[2] + badge + '</div></a>'
+                        return '<a href="' + row[3] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[4] + '" data-src="/assets/img/no-player-image.jpg" alt="" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[2] + badge + '</div></a>';
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
                     },
                     'orderSequence': ['asc'],
                 },
                 // Members
                 {
-                    "targets": 1,
-                    "render": function (data, type, row) {
+                    'targets': 1,
+                    'render': function (data, type, row) {
                         return row[5].toLocaleString();
                     },
                     'orderSequence': ['desc', 'asc'],
                 },
                 // Type
                 {
-                    "targets": 2,
-                    "render": function (data, type, row) {
+                    'targets': 2,
+                    'render': function (data, type, row) {
                         if (row[6] === 'game') {
                             return '<i class="fas fa-gamepad text-primary"></i> Game';
                         } else if (row[6] === 'group') {
@@ -591,23 +591,23 @@ if ($playerPage.length > 0) {
                         }
                         return '';
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
                 // Link
                 {
-                    "targets": 3,
-                    "render": function (data, type, row) {
+                    'targets': 3,
+                    'render': function (data, type, row) {
                         if (row[8]) {
                             return '<a href="' + row[8] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';
                         }
                         return '';
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
-            ]
+            ],
         };
 
         $('#groups-table').gdbTable({
@@ -618,70 +618,70 @@ if ($playerPage.length > 0) {
     function loadPlayerWishlistTab() {
 
         const options = {
-            "order": [[0, 'asc']],
-            "createdRow": function (row, data, dataIndex) {
+            'order': [[0, 'asc']],
+            'createdRow': function (row, data, dataIndex) {
                 $(row).attr('data-link', data[2]);
             },
-            "columnDefs": [
+            'columnDefs': [
                 // Rank
                 {
-                    "targets": 0,
-                    "render": function (data, type, row) {
+                    'targets': 0,
+                    'render': function (data, type, row) {
                         if (row[4] === 0) {
                             return '-';
                         }
                         return ordinal(row[4]);
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
-                        $(td).addClass('font-weight-bold')
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).addClass('font-weight-bold');
                     },
                     'orderSequence': ['asc'],
                 },
                 // App Name
                 {
-                    "targets": 1,
-                    "render": function (data, type, row) {
-                        return '<a href="' + row[2] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[3] + '" data-src="/assets/img/no-player-image.jpg" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></a>'
+                    'targets': 1,
+                    'render': function (data, type, row) {
+                        return '<a href="' + row[2] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[3] + '" data-src="/assets/img/no-player-image.jpg" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></a>';
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
                     },
                     'orderSequence': ['asc'],
                 },
                 // Release State
                 {
-                    "targets": 2,
-                    "render": function (data, type, row) {
+                    'targets': 2,
+                    'render': function (data, type, row) {
                         return row[5];
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
                 // Release Date
                 {
-                    "targets": 3,
-                    "render": function (data, type, row) {
+                    'targets': 3,
+                    'render': function (data, type, row) {
                         return row[6];
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');
                     },
                     'orderSequence': ['desc', 'asc'],
                 },
                 // Price
                 {
-                    "targets": 4,
-                    "render": function (data, type, row) {
+                    'targets': 4,
+                    'render': function (data, type, row) {
                         return row[7];
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');
                     },
                     'orderSequence': ['desc', 'asc'],
                 },
-            ]
+            ],
         };
 
         $('#wishlist-table').gdbTable({
@@ -692,7 +692,7 @@ if ($playerPage.length > 0) {
     function loadPlayerAchievementsTab() {
 
         $.ajax({
-            type: "GET",
+            type: 'GET',
             url: '/players/' + $playerPage.attr('data-id') + '/achievement-days.json',
             dataType: 'json',
             success: function (data, textStatus, jqXHR) {
@@ -701,31 +701,31 @@ if ($playerPage.length > 0) {
                     data = [];
                 }
 
-                $("#achievement-days-chart").empty().calmosaic(data);
+                $('#achievement-days-chart').empty().calmosaic(data);
             },
         });
 
         const recentOptions = {
-            "order": [[1, 'desc']],
-            "createdRow": function (row, data, dataIndex) {
+            'order': [[1, 'desc']],
+            'createdRow': function (row, data, dataIndex) {
                 $(row).attr('data-link', data[0] + '#achievements');
             },
-            "columnDefs": [
+            'columnDefs': [
                 // App / Achievement
                 {
-                    "targets": 0,
-                    "render": function (data, type, row) {
-                        return '<a href="' + row[0] + '#achievements" class="icon-name"><div class="icon"><img class="tall" data-lazy="' + row[4] + '" alt="" data-lazy-alt="' + row[3] + '"></div><div class="name">' + row[1] + ': ' + row[3] + '<br><small>' + row[5] + '</small></div></a>'
+                    'targets': 0,
+                    'render': function (data, type, row) {
+                        return '<a href="' + row[0] + '#achievements" class="icon-name"><div class="icon"><img class="tall" data-lazy="' + row[4] + '" alt="" data-lazy-alt="' + row[3] + '"></div><div class="name">' + row[1] + ': ' + row[3] + '<br><small>' + row[5] + '</small></div></a>';
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
                 // Date
                 {
-                    "targets": 1,
-                    "render": function (data, type, row) {
+                    'targets': 1,
+                    'render': function (data, type, row) {
                         if (row[6]) {
                             return '<span data-livestamp="' + row[6] + '"></span>'
                                 + '<br><small class="text-muted">' + row[8] + '</small>';
@@ -733,25 +733,25 @@ if ($playerPage.length > 0) {
                             return 'Unknown';
                         }
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');
                     },
-                    "orderSequence": ['desc', 'asc'],
+                    'orderSequence': ['desc', 'asc'],
                 },
                 // Completed
                 {
-                    "targets": 2,
-                    "render": function (data, type, row) {
+                    'targets': 2,
+                    'render': function (data, type, row) {
                         return row[7] + '%';
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         rowData[7] = Math.ceil(rowData[7]);
                         $(td).css('background', 'linear-gradient(to right, rgba(0,0,0,.15) ' + rowData[7] + '%, transparent ' + rowData[7] + '%)');
                         $(td).addClass('thin');
                     },
-                    "orderSequence": ['asc', 'desc'],
+                    'orderSequence': ['asc', 'desc'],
                 },
-            ]
+            ],
         };
 
         $('#achievements-table').gdbTable({
@@ -762,7 +762,7 @@ if ($playerPage.length > 0) {
     function loadPlayerAchievementsInfluxChart() {
 
         $.ajax({
-            type: "GET",
+            type: 'GET',
             url: '/players/' + $playerPage.attr('data-id') + '/achievement-influx.json',
             dataType: 'json',
             success: function (data, textStatus, jqXHR) {
@@ -775,7 +775,7 @@ if ($playerPage.length > 0) {
                     yAxis: {
                         allowDecimals: false,
                         title: {
-                            text: 'Achievements'
+                            text: 'Achievements',
                         },
                         labels: {
                             formatter: function () {
@@ -788,11 +788,11 @@ if ($playerPage.length > 0) {
                         formatter: function () {
                             switch (this.series.name) {
                                 case 'Achievements':
-                                    return this.y.toLocaleString() + ' achievements on ' + moment(this.key).format("dddd DD MMM YYYY");
+                                    return this.y.toLocaleString() + ' achievements on ' + moment(this.key).format('dddd DD MMM YYYY');
                                 case 'Games with Achievements':
-                                    return this.y.toLocaleString() + ' games with achievements on ' + moment(this.key).format("dddd DD MMM YYYY");
+                                    return this.y.toLocaleString() + ' games with achievements on ' + moment(this.key).format('dddd DD MMM YYYY');
                                 case 'Games with 100%':
-                                    return this.y.toLocaleString() + ' games with 100% achievements on ' + moment(this.key).format("dddd DD MMM YYYY");
+                                    return this.y.toLocaleString() + ' games with 100% achievements on ' + moment(this.key).format('dddd DD MMM YYYY');
                             }
                         },
                     },

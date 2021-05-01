@@ -4,62 +4,62 @@ const $trendingAppsTable = $('table.table');
 if ($trendingAppsPage.length > 0) {
 
     const options = {
-        "order": [[3, 'desc']],
-        "createdRow": function (row, data, dataIndex) {
+        'order': [[3, 'desc']],
+        'createdRow': function (row, data, dataIndex) {
             $(row).attr('data-app-id', data[0]);
             $(row).attr('data-link', data[3]);
         },
-        "columnDefs": [
+        'columnDefs': [
             // Icon / App Name
             {
-                "targets": 0,
-                "render": function (data, type, row) {
-                    return '<a href="' + row[3] + '" class="icon-name"><div class="icon"><img alt="" data-lazy="' + row[2] + '" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></a>'
+                'targets': 0,
+                'render': function (data, type, row) {
+                    return '<a href="' + row[3] + '" class="icon-name"><div class="icon"><img alt="" data-lazy="' + row[2] + '" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></a>';
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
+                'createdCell': function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');
                 },
-                "orderable": false,
+                'orderable': false,
             },
             // Price
             {
-                "targets": 1,
-                "render": function (data, type, row) {
+                'targets': 1,
+                'render': function (data, type, row) {
                     return row[4];
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
+                'createdCell': function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
-                "orderable": false,
+                'orderable': false,
             },
             // Players
             {
-                "targets": 2,
-                "render": function (data, type, row) {
+                'targets': 2,
+                'render': function (data, type, row) {
                     return row[6].toLocaleString();
                 },
-                "orderSequence": ["desc"],
+                'orderSequence': ['desc'],
             },
             // Trend Value
             {
-                "targets": 3,
-                "render": function (data, type, row) {
+                'targets': 3,
+                'render': function (data, type, row) {
                     return row[5].toLocaleString();
                 },
-                "orderSequence": ["desc", "asc"],
+                'orderSequence': ['desc', 'asc'],
             },
             // Chart
             {
-                "targets": 4,
-                "render": function (data, type, row) {
+                'targets': 4,
+                'render': function (data, type, row) {
                     return '<div data-app-id="' + row[0] + '"><i class="fas fa-spinner fa-spin"></i></div>';
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
+                'createdCell': function (td, cellData, rowData, row, col) {
                     $(td).addClass('chart');
                 },
-                "orderable": false,
+                'orderable': false,
             },
-        ]
+        ],
     };
 
     $trendingAppsTable.gdbTable({tableOptions: options});
@@ -81,13 +81,13 @@ if ($trendingAppsPage.length > 0 || $('#new-releases-page').length > 0) {
             .join(',');
 
         $.ajax({
-            type: "GET",
+            type: 'GET',
             url: '/games/trending/charts.json?ids=' + vals,
             dataType: 'json',
             success: function (datas, textStatus, jqXHR) {
 
                 if (datas === null) {
-                    return
+                    return;
                 }
 
                 $('div[data-app-id]').each(function (index) {
@@ -122,20 +122,20 @@ if ($trendingAppsPage.length > 0 || $('#new-releases-page').length > 0) {
                         plotOptions: {
                             series: {
                                 marker: {
-                                    enabled: false
-                                }
-                            }
+                                    enabled: false,
+                                },
+                            },
                         },
                         tooltip: {
                             hideDelay: 0,
                             outside: true,
                             shared: true,
                             formatter: function () {
-                                return this.y.toLocaleString() + ' players on ' + moment(this.x).format("dddd DD MMM YYYY @ HH:mm");
+                                return this.y.toLocaleString() + ' players on ' + moment(this.x).format('dddd DD MMM YYYY @ HH:mm');
                             },
                             style: {
                                 'width': '500px',
-                            }
+                            },
                         },
                         series: [
                             {

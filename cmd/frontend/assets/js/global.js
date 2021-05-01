@@ -1,5 +1,5 @@
 const $document = $(document);
-const $body = $("body");
+const $body = $('body');
 
 $(document).on('mouseup', '[data-link] a, [data-link] .select-checkbox, [data-link-tab] a', function (e) {
     e.stopPropagation();
@@ -54,7 +54,7 @@ $(document).on('mouseup', '[data-link]', function (e) {
 
     // New window
     if (e.button === 1 || e.ctrlKey || e.shiftKey || e.metaKey || e.which === 2 || target === '_blank') {
-        if (!$(e.target).is("a")) {
+        if (!$(e.target).is('a')) {
             window.open(link, '_blank');
         }
         return true;
@@ -83,10 +83,10 @@ if (user.isProd) {
 const $dropdowns = $('.navbar .dropdown');
 
 $dropdowns.on('mouseenter', function (e) {
-    $(this).addClass("show").find('.dropdown-menu').addClass("show")
+    $(this).addClass('show').find('.dropdown-menu').addClass('show');
 });
 $dropdowns.on('mouseleave', function (e) {
-    $(this).removeClass("show").find('.dropdown-menu').removeClass("show");
+    $(this).removeClass('show').find('.dropdown-menu').removeClass('show');
 });
 $dropdowns.on('click', function (e) {
     e.stopPropagation();
@@ -142,14 +142,14 @@ $('.json').each(function (i, value) {
 
 
 // Scroll to top link
-const $top = $("#top");
+const $top = $('#top');
 
 $(window).on('scroll', function (e) {
 
     if ($(window).scrollTop() >= 1000) {
-        $top.addClass("show");
+        $top.addClass('show');
     } else {
-        $top.removeClass("show");
+        $top.removeClass('show');
     }
 });
 
@@ -290,9 +290,9 @@ function getSessionCookie(key = null) {
     }
 
     if (key) {
-        return cookieObj[key]
+        return cookieObj[key];
     } else {
-        return cookieObj
+        return cookieObj;
     }
 }
 
@@ -309,7 +309,7 @@ $darkMode.on('click', function (e) {
     const $sun = $darkMode.find('.fa-sun');
     const $moon = $darkMode.find('.fa-moon');
 
-    if ($sun.hasClass("d-none")) {
+    if ($sun.hasClass('d-none')) {
 
         $sun.removeClass('d-none');
         $moon.addClass('d-none');
@@ -339,15 +339,15 @@ $(document).on('click', '#patreon-message i, #patreon-message svg', function (e)
     $(this).parent().slideUp(300, function () {
         $('#patreon-message').remove();
     });
-    return false
+    return false;
 });
 
 //
 function getOS() {
 
-    let os = "windows";
-    if (navigator.appVersion.indexOf("Mac") !== -1) os = "macos";
-    if (navigator.appVersion.indexOf("Linux") !== -1) os = "linux";
+    let os = 'windows';
+    if (navigator.appVersion.indexOf('Mac') !== -1) os = 'macos';
+    if (navigator.appVersion.indexOf('Linux') !== -1) os = 'linux';
 
     return os;
 }
@@ -362,7 +362,7 @@ $('[data-link-tab]').on('mouseup', function () {
 function loadFriends(appID, addSelf, callback) {
 
     $.ajax({
-        type: "GET",
+        type: 'GET',
         url: '/games/' + appID + '/friends.json',
         dataType: 'json',
         success: function (data, textStatus, jqXHR) {
@@ -376,7 +376,7 @@ function loadFriends(appID, addSelf, callback) {
             // Sort alphabetically
             data.sort(function (a, b) {
                 return a.v.toLowerCase().localeCompare(b.v.toLowerCase());
-            })
+            });
 
             $select.empty();
             $select.append('<option value="">Choose Friend</option>');
@@ -392,8 +392,8 @@ function loadFriends(appID, addSelf, callback) {
             const $chosen = $select.chosen({
                 disable_search_threshold: 5,
                 allow_single_deselect: false,
-                max_selected_options: 1
-            })
+                max_selected_options: 1,
+            });
 
             $chosen.change(function (e) {
                 callback($chosen);
@@ -402,7 +402,7 @@ function loadFriends(appID, addSelf, callback) {
     });
 }
 
-window.addEventListener("message", (event) => {
+window.addEventListener('message', (event) => {
     try {
         let message = JSON.parse(event.data);
         if (message.msg_type === 'resize-me') {

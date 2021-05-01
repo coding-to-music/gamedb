@@ -19,9 +19,9 @@ if ($priceChart.length > 0 && prices) {
         chart.showLoading();
 
         request = $.ajax({
-            type: "GET",
+            type: 'GET',
             data: {
-                code: code
+                code: code,
             },
             url: $priceChart.attr('data-ajax'),
             dataType: 'json',
@@ -40,7 +40,7 @@ if ($priceChart.length > 0 && prices) {
     $('#prices tr[data-code]').on('click', function (e) {
 
         if ($(this).hasClass('font-weight-bold')) {
-            return
+            return;
         }
 
         upateChart($(this).attr('data-code'));
@@ -57,13 +57,13 @@ if ($priceChart.length > 0 && prices) {
                 labels: {
                     step: 1,
                     formatter: function () {
-                        return moment(this.value).format("Do MMM YY");
+                        return moment(this.value).format('Do MMM YY');
                     },
                 },
             },
             yAxis: {
                 title: {
-                    text: 'Price (' + user.userCurrencySymbol + ')'
+                    text: 'Price (' + user.userCurrencySymbol + ')',
                 },
                 min: 0,
                 allowDecimals: true,
@@ -73,8 +73,8 @@ if ($priceChart.length > 0 && prices) {
                     type: 'line',
                     name: 'Price',
                     step: 'left',
-                    color: '#28a745'
-                }
+                    color: '#28a745',
+                },
             ],
             // annotations: [{
             //     labelOptions: {

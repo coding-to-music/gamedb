@@ -51,7 +51,7 @@ if ($('#admin-tasks-page').length > 0) {
 if ($('#admin-queues-page').length > 0) {
 
     const queuesForm = $('form#queues');
-    queuesForm.on("submit", function (e) {
+    queuesForm.on('submit', function (e) {
         e.preventDefault();
         $.ajax({
             type: 'post',
@@ -59,7 +59,7 @@ if ($('#admin-queues-page').length > 0) {
             data: $(this).serialize(),
             success: function (data, textStatus, jqXHR) {
                 toast(true, 'Queued');
-                queuesForm.trigger("reset");
+                queuesForm.trigger('reset');
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 toast(false, errorThrown);
@@ -71,8 +71,8 @@ if ($('#admin-queues-page').length > 0) {
 if ($('#admin-users-page').length > 0) {
 
     const options = {
-        "order": [[1, 'desc']],
-        "columnDefs": [
+        'order': [[1, 'desc']],
+        'columnDefs': [
             // Email
             {
                 'targets': 0,
@@ -91,7 +91,7 @@ if ($('#admin-users-page').length > 0) {
                 'render': function (data, type, row) {
                     return row[0];
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
+                'createdCell': function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
                 'orderSequence': ['desc', 'asc'],
@@ -105,7 +105,7 @@ if ($('#admin-users-page').length > 0) {
                     }
                     return row[5];
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
+                'createdCell': function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
                 'orderSequence': ['desc', 'asc'],
@@ -146,7 +146,7 @@ if ($('#admin-users-page').length > 0) {
                     }
                     return '';
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
+                'createdCell': function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
                 'orderable': false,
@@ -162,7 +162,7 @@ if ($('#admin-users-page').length > 0) {
                 },
                 'orderSequence': ['desc'],
             },
-        ]
+        ],
     };
 
     const $table = $('table.table');
@@ -174,36 +174,36 @@ if ($('#admin-users-page').length > 0) {
 if ($('#admin-discord-guilds-page').length > 0) {
 
     const options = {
-        "order": [[1, 'desc']],
-        "columnDefs": [
+        'order': [[1, 'desc']],
+        'columnDefs': [
             // Icon / Guild Name
             {
-                "targets": 0,
-                "render": function (data, type, row) {
-                    return '<a class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></a>'
+                'targets': 0,
+                'render': function (data, type, row) {
+                    return '<a class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></a>';
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
+                'createdCell': function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');
                 },
-                "orderSequence": ["asc", "desc"],
+                'orderSequence': ['asc', 'desc'],
             },
             // Members
             {
-                "targets": 1,
-                "render": function (data, type, row) {
+                'targets': 1,
+                'render': function (data, type, row) {
                     return row[3].toLocaleString();
                 },
-                "orderSequence": ["desc", "asc"],
+                'orderSequence': ['desc', 'asc'],
             },
             // Requests
             {
-                "targets": 2,
-                "render": function (data, type, row) {
+                'targets': 2,
+                'render': function (data, type, row) {
                     return row[4].toLocaleString();
                 },
-                "orderSequence": ["desc", "asc"],
+                'orderSequence': ['desc', 'asc'],
             },
-        ]
+        ],
     };
 
     const $table = $('table.table');
@@ -215,8 +215,8 @@ if ($('#admin-discord-guilds-page').length > 0) {
 if ($('#admin-consumers-page').length > 0) {
 
     const options = {
-        "order": [[0, 'desc']],
-        "drawCallback": function (settings) {
+        'order': [[0, 'desc']],
+        'drawCallback': function (settings) {
             const api = this.api();
             if (api.order()[0] && api.order()[0][0] === 0) {
                 const rows = api.rows({page: 'current'}).nodes();
@@ -235,7 +235,7 @@ if ($('#admin-consumers-page').length > 0) {
                 });
             }
         },
-        "columnDefs": [
+        'columnDefs': [
             // Expires
             {
                 'targets': 0,
@@ -287,7 +287,7 @@ if ($('#admin-consumers-page').length > 0) {
                 },
                 'orderable': false,
             },
-        ]
+        ],
     };
 
     const $table = $('table.table');
@@ -305,18 +305,18 @@ if ($('#admin-webhooks-page').length > 0) {
     });
 
     const options = {
-        "order": [[0, 'desc']],
-        "createdRow": function (row, data, dataIndex) {
+        'order': [[0, 'desc']],
+        'createdRow': function (row, data, dataIndex) {
             $(row).addClass('cursor-pointer');
         },
-        "columnDefs": [
+        'columnDefs': [
             // Date
             {
                 'targets': 0,
                 'render': function (data, type, row) {
                     return row[0];
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
+                'createdCell': function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
                 'orderable': false,
@@ -327,7 +327,7 @@ if ($('#admin-webhooks-page').length > 0) {
                 'render': function (data, type, row) {
                     return row[1];
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
+                'createdCell': function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
                 'orderable': false,
@@ -338,7 +338,7 @@ if ($('#admin-webhooks-page').length > 0) {
                 'render': function (data, type, row) {
                     return row[2];
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
+                'createdCell': function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
                 'orderable': false,
@@ -349,12 +349,12 @@ if ($('#admin-webhooks-page').length > 0) {
                 'render': function (data, type, row) {
                     return row[4];
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
+                'createdCell': function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
                 'orderable': false,
             },
-        ]
+        ],
     };
 
     const $table = $('table.table');
@@ -380,15 +380,15 @@ if ($('#admin-webhooks-page').length > 0) {
                 row.child('<pre>' + JSON.stringify(JSON.parse(row.data()[3]), null, 4) + '</pre>').show();
                 $(this).addClass('shown');
             }
-        }
+        },
     );
 }
 
 if ($('#admin-delays-page').length > 0) {
 
     const options = {
-        "order": [[0, 'desc']],
-        "columnDefs": [
+        'order': [[0, 'desc']],
+        'columnDefs': [
             // First Seen
             // {
             //     'targets': 0,
@@ -405,10 +405,10 @@ if ($('#admin-delays-page').length > 0) {
                 'render': function (data, type, row) {
                     return row[2];
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
+                'createdCell': function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
-                "orderSequence": ["desc", "asc"],
+                'orderSequence': ['desc', 'asc'],
             },
             // Queue
             {
@@ -416,7 +416,7 @@ if ($('#admin-delays-page').length > 0) {
                 'render': function (data, type, row) {
                     return row[3];
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
+                'createdCell': function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
                 'orderable': false,
@@ -427,7 +427,7 @@ if ($('#admin-delays-page').length > 0) {
                 'render': function (data, type, row) {
                     return row[4].toLocaleString();
                 },
-                "orderSequence": ["desc", "asc"],
+                'orderSequence': ['desc', 'asc'],
             },
             // Message
             {
@@ -437,7 +437,7 @@ if ($('#admin-delays-page').length > 0) {
                 },
                 'orderable': false,
             },
-        ]
+        ],
     };
 
     $('table.table').gdbTable({

@@ -9,31 +9,31 @@ if ($('#coop-page').length > 0) {
     function loadCoopSearchTable() {
 
         const options = {
-            "order": [[0, 'asc']],
-            "createdRow": function (row, data, dataIndex) {
+            'order': [[0, 'asc']],
+            'createdRow': function (row, data, dataIndex) {
                 $(row).attr('data-player-id', data[1]);
             },
-            "language": {
-                "zeroRecords": function () {
+            'language': {
+                'zeroRecords': function () {
                     return 'No matching players found on Global Steam. If a player is missing, <a href="/players/add?search=' + $search.val() + '">add them here</a>.';
                 },
             },
-            "columnDefs": [
+            'columnDefs': [
                 // Icon / Player Name
                 {
-                    "targets": 0,
-                    "render": function (data, type, row) {
+                    'targets': 0,
+                    'render': function (data, type, row) {
                         return '<a href="' + row[3] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[4] + '" alt="" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[10] + '</div></a>';
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
                 // Games
                 {
-                    "targets": 1,
-                    "render": function (data, type, row) {
+                    'targets': 1,
+                    'render': function (data, type, row) {
 
                         if (row[0]) {
                             return row[0].toLocaleString();
@@ -41,23 +41,23 @@ if ($('#coop-page').length > 0) {
                             return $lockIcon;
                         }
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
                 // Level
                 {
-                    "targets": 2,
-                    "render": function (data, type, row) {
+                    'targets': 2,
+                    'render': function (data, type, row) {
                         if (row[6]) {
                             return row[6].toLocaleString();
                         }
                         return $lockIcon;
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
                 // Action
                 {
-                    "targets": 3,
-                    "render": function (data, type, row) {
+                    'targets': 3,
+                    'render': function (data, type, row) {
 
                         if (row[8]) {
                             return '<a href="' + row[7] + '" ><i class="fas fa-minus"></i> Remove</a>';
@@ -65,32 +65,32 @@ if ($('#coop-page').length > 0) {
                             return '<a href="' + row[7] + '" ><i class="fas fa-plus"></i> Add</a>';
                         }
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
                 // Community Link
                 {
-                    "targets": 4,
-                    "render": function (data, type, row) {
+                    'targets': 4,
+                    'render': function (data, type, row) {
                         if (row[5]) {
                             return '<a href="' + row[5] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';
                         }
                         return '';
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
                 // Search Score
                 {
-                    "targets": 5,
-                    "render": function (data, type, row) {
+                    'targets': 5,
+                    'render': function (data, type, row) {
                         return row[9];
                     },
-                    "orderable": false,
-                    "visible": user.isLocal,
+                    'orderable': false,
+                    'visible': user.isLocal,
                 },
-            ]
+            ],
         };
 
         const dt = $('#search-table').gdbTable({
@@ -115,62 +115,62 @@ if ($('#coop-page').length > 0) {
     function loadCoopGamesTable() {
 
         const options = {
-            "order": [[0, 'asc']],
-            "createdRow": function (row, data, dataIndex) {
+            'order': [[0, 'asc']],
+            'createdRow': function (row, data, dataIndex) {
                 $(row).attr('data-app-id', data[0]);
                 $(row).attr('data-link', data[7]);
             },
-            "columnDefs": [
+            'columnDefs': [
                 // Icon / App Name
                 {
-                    "targets": 0,
-                    "render": function (data, type, row) {
+                    'targets': 0,
+                    'render': function (data, type, row) {
                         return '<a href="' + row[7] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></a>';
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
                 // Platforms
                 {
-                    "targets": 1,
-                    "render": function (data, type, row) {
+                    'targets': 1,
+                    'render': function (data, type, row) {
                         return row[3];
                     },
-                    "createdCell": function (td, cellData, rowData, row, col) {
+                    'createdCell': function (td, cellData, rowData, row, col) {
                         $(td).addClass('platforms');
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
                 // Achievements
                 {
-                    "targets": 2,
-                    "render": function (data, type, row) {
+                    'targets': 2,
+                    'render': function (data, type, row) {
                         return row[4].toLocaleString();
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
                 // Co-op Tags
                 {
-                    "targets": 3,
-                    "render": function (data, type, row) {
+                    'targets': 3,
+                    'render': function (data, type, row) {
                         return row[5];
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
                 // Community Link
                 {
-                    "targets": 4,
-                    "render": function (data, type, row) {
+                    'targets': 4,
+                    'render': function (data, type, row) {
                         if (row[6]) {
                             return '<a href="' + row[6] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';
                         }
                         return '';
                     },
-                    "orderable": false,
+                    'orderable': false,
                 },
-            ]
+            ],
         };
 
         $('#games-table').gdbTable({

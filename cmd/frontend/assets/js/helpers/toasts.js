@@ -19,14 +19,14 @@ function toast(success, body, title = '', timeout = 0, link = '') {
         preventDuplicates: false,
         progressBar: true,
         timeOut: timeout * 1000,
-        extendedTimeOut: timeout * 1000
+        extendedTimeOut: timeout * 1000,
     };
 
     if (isMobile()) {
-        options["positionClass"] = "toast-bottom-right";
-        options["newestOnTop"] = true;
+        options['positionClass'] = 'toast-bottom-right';
+        options['newestOnTop'] = true;
     } else {
-        options["positionClass"] = "toast-top-right";
+        options['positionClass'] = 'toast-top-right';
     }
 
     if (success) {
