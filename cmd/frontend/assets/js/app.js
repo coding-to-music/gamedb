@@ -761,6 +761,15 @@ if ($appPage.length > 0) {
 
     function loadAppPlayersHeatmapChart() {
 
+        // Set default
+        const $dd = $('#heatmap-timezones');
+        let diff = Math.floor(moment().utcOffset() / 60);
+        if (diff >= 0) {
+            diff = '+' + diff;
+        }
+        $dd.val(diff);
+
+        //
         $.ajax({
             type: 'GET',
             url: '/games/' + $appPage.attr('data-id') + '/players-heatmap.json',
@@ -774,75 +783,99 @@ if ($appPage.length > 0) {
                     return;
                 }
 
-                // Convert time local timezone
-                const diff = Math.floor(moment().utcOffset() / 60);
-                const zone = moment.tz(moment.tz.guess()).zoneAbbr();
+                let dt;
+                $dd.on('change', function () {
 
-                if (Math.abs(diff) > 0) {
-                    let data2 = data['max_player_count'];
-                    data2.forEach(function (hour, index) {
-                        data2[index][0] += diff;
-                        if (data2[index][0] > 23) {
-                            data2[index][0] -= 24;
-                            data2[index][1]++;
-                        } else if (data2[index][0] < 0) {
-                            data2[index][0] += 24;
-                            data2[index][1]--;
-                        }
-                        if (data2[index][1] > 6) {
-                            data2[index][1] -= 7;
-                        } else if (data2[index][1] < 0) {
-                            data2[index][1] += 7;
-                        }
-                    });
-                    data = {'max_player_count': data2};
-                }
+                    if (dt) {
+                        // Having to rebuild whole chart as just updating series data seems to break it
+                        dt.destroy();
+                    }
 
-                Highcharts.chart($chart[0], $.extend(true, {}, defaultChartOptions, {
-                    chart: {
-                        type: 'heatmap',
-                    },
-                    xAxis: {
-                        title: null,
-                        type: 'category',
-                        lineColor: 'rgba(0,0,0,0)',
-                    },
-                    yAxis: {
-                        categories: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-                        title: null,
-                        reversed: true,
-                        gridLineColor: 'rgba(0,0,0,0)',
-                    },
-                    legend: {
-                        enabled: true,
-                        align: 'right',
-                        layout: 'vertical',
-                        verticalAlign: 'middle',
-                    },
-                    tooltip: {
-                        formatter: function () {
-                            const day = this.series.yAxis.categories[this.point.y];
-                            const time = this.point.x;
-                            return 'Average of last 4 ' + day + 's @ ' + pad(time, 2) + ':00-' + pad(time, 2) + ':59 ' + zone + ': ~'
-                                + Math.round(this.point.value).toLocaleString() + ' players';
+                    dt = Highcharts.chart($chart[0], $.extend(true, {}, defaultChartOptions, {
+                        chart: {
+                            type: 'heatmap',
                         },
-                    },
-                    colorAxis: {
-                        minColor: darkMode ? '#212529' : '#FFFFFF',
-                        maxColor: defaultChartOptions.colors[0],
-                        reversed: false,
-                    },
-                    plotOptions: {
-                        series: {
-                            marker: {
-                                enabled: true,
+                        xAxis: {
+                            title: null,
+                            type: 'category',
+                            lineColor: 'rgba(0,0,0,0)',
+                        },
+                        yAxis: {
+                            categories: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                            title: null,
+                            reversed: true,
+                            gridLineColor: 'rgba(0,0,0,0)',
+                        },
+                        legend: {
+                            enabled: true,
+                            align: 'right',
+                            layout: 'vertical',
+                            verticalAlign: 'middle',
+                        },
+                        tooltip: {
+                            formatter: function () {
+                                const day = this.series.yAxis.categories[this.point.y];
+                                const time = this.point.x;
+                                return 'Average of last 4 ' + day + 's @ ' + pad(time, 2) + ':00-' + pad(time, 2) + ':59 ' + diff + ': ~'
+                                    + Math.round(this.point.value).toLocaleString() + ' players';
                             },
                         },
-                    },
-                    series: [{data: data['max_player_count'], borderWidth: 0}],
-                }));
+                        colorAxis: {
+                            minColor: darkMode ? '#212529' : '#FFFFFF',
+                            maxColor: defaultChartOptions.colors[0],
+                            reversed: false,
+                        },
+                        plotOptions: {
+                            series: {
+                                marker: {
+                                    enabled: true,
+                                },
+                            },
+                        },
+                        series: [{
+                            data: adjustZone(data.max_player_count, $dd.val()),
+                            borderWidth: 0,
+                        }],
+                    }));
+                });
+
+                $dd.trigger('change');
             },
         });
+    }
+
+    function adjustZone(data, diff) {
+
+        // Using extend to copy by value
+        const data2 = $.extend(true, [], data);
+
+        data2.forEach(function (hour, index) {
+
+            diff = parseInt(diff);
+
+            if (diff !== 0) {
+
+                data2[index][0] += diff;
+
+                // Hours
+                if (data2[index][0] > 23) {
+                    data2[index][0] -= 24;
+                    data2[index][1]++;
+                } else if (data2[index][0] < 0) {
+                    data2[index][0] += 24;
+                    data2[index][1]--;
+                }
+
+                // Days
+                if (data2[index][1] > 6) {
+                    data2[index][1] -= 7;
+                } else if (data2[index][1] < 0) {
+                    data2[index][1] += 7;
+                }
+            }
+        });
+
+        return data2;
     }
 
     function loadAppWishlist() {

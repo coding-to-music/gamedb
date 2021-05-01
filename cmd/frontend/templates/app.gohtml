@@ -521,7 +521,17 @@
                         </div>
 
                         <div class="card mb-4">
-                            <h5 class="card-header">Player Count - By Time of Day/Week</h5>
+                            <h5 class="card-header">
+                                Player Count - By Time of Day/Week
+                                <label for="heatmap-timezones" class="float-right mb-0">
+                                    Timezone
+                                    <select id="heatmap-timezones">
+                                        {{ range .Timezones }}
+                                            <option value="{{ . }}">{{ . }}</option>
+                                        {{ end }}
+                                    </select>
+                                </label>
+                            </h5>
                             <div class="card-body">
                                 <div class="player-chart" id="players-heatmap-chart">
                                     <i class="fas fa-spinner fa-spin"></i>

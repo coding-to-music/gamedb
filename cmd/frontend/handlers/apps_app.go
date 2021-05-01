@@ -372,6 +372,15 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	// Get user
 	t.APIKey = session.Get(r, session.SessionUserAPIKey)
 
+	// Heatmap Timezones
+	for i := -12; i <= 12; i++ {
+		s := strconv.Itoa(i)
+		if i >= 0 {
+			s = "+" + s
+		}
+		t.Timezones = append(t.Timezones, s)
+	}
+
 	//
 	returnTemplate(w, r, t)
 }
@@ -393,6 +402,7 @@ type appTemplate struct {
 	GroupPath     string
 	Countries     []AppCountry
 	APIKey        string
+	Timezones     []string
 
 	// Stats
 	Categories []mongo.Stat
