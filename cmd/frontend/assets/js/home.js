@@ -418,12 +418,12 @@ if ($homePage.length > 0) {
 
                 const $legend = $('#new-releases-legend');
 
-                $.each(hc.series, function (j, series) {
+                $.each(hc.series, function (i, v) {
 
-                    const app = data.apps[series.userOptions.app];
+                    const app = data.apps[v.userOptions.app];
 
-                    $legend.append('<div class="cursor-pointer" style="color:' + series.color + '" data-link="' + app.path + '">'
-                        + '<img class="rounded" src="' + app.icon + '" alt="' + series.name + '"> ' + series.name + '</div>');
+                    $legend.append('<div class="cursor-pointer" style="color:' + v.color + '" data-link="' + app.path + '">'
+                        + '<img class="rounded" src="' + app.icon + '" alt="' + v.name + '"> ' + v.name + '</div>');
                 });
 
                 homeAttachLegendEvents(hc, $legend, data);

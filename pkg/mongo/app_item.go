@@ -80,11 +80,7 @@ func (item AppItem) getKey() string {
 }
 
 func (item AppItem) GetType() string {
-
-	switch item.Type {
-	default:
-		return strings.Title(item.Type)
-	}
+	return strings.Title(item.Type)
 }
 
 func (item *AppItem) SetTags(tagsString string) {

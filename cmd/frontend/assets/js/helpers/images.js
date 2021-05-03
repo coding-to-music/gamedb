@@ -2,7 +2,6 @@ function pauseAllVideos() {
 
     $('video').each(function (index) {
         $(this)[0].pause();
-        // $(this)[0].currentTime = 0;
     });
 }
 
@@ -128,8 +127,9 @@ function fixBrokenImages() {
     });
 }
 
-$(fixBrokenImages);
-$(handleVideos);
-
-$(observeLazyImages('img[data-lazy]'));
-$(observeLazyVideos());
+$(function () {
+    fixBrokenImages();
+    handleVideos();
+    observeLazyImages('img[data-lazy]');
+    observeLazyVideos();
+});

@@ -119,10 +119,8 @@ $('.json').each(function (i, value) {
         if (hash) {
 
             let fullHash = '';
-            hash.split(/[,\-]/).map(function (hash) {
-
+            hash.split(/[,\-]/).forEach(function (hash) {
                 fullHash = (fullHash === '') ? hash : fullHash + '-' + hash;
-
                 $('.nav-link[href="' + fullHash + '"]').tab('show');
             });
         }
