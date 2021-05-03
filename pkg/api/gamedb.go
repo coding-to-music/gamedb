@@ -553,7 +553,7 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 						{Ref: "#/components/parameters/offset-param"},
 						{Ref: "#/components/parameters/limit-param"},
 						{Ref: "#/components/parameters/order-param-desc"},
-						{Value: openapi3.NewQueryParameter("sort").WithSchema(openapi3.NewStringSchema().WithEnum("id", "apps_count", "billing_type", "change_number_date", "license_type", "platforms", "status").WithDefault("id"))},
+						{Value: openapi3.NewQueryParameter("sort").WithSchema(openapi3.NewStringSchema().WithEnum("id", "apps_count", "billing_type", "change_number_date", "license_type", "status").WithDefault("id"))},
 						{Value: openapi3.NewQueryParameter("ids").WithSchema(openapi3.NewArraySchema().WithMaxItems(10).WithItems(openapi3.NewInt32Schema()))},
 						{Value: openapi3.NewQueryParameter("billingType").WithSchema(openapi3.NewArraySchema().WithMaxItems(10).WithItems(openapi3.NewInt32Schema()))},
 						{Value: openapi3.NewQueryParameter("licenseType").WithSchema(openapi3.NewArraySchema().WithMaxItems(10).WithItems(openapi3.NewInt32Schema()))},

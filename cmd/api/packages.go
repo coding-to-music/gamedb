@@ -28,17 +28,15 @@ func (s Server) GetPackages(w http.ResponseWriter, r *http.Request, params gener
 		case "id":
 			sort = "_id"
 		case "apps_count":
-			sort = "_id"
+			sort = "apps_count"
 		case "billing_type":
-			sort = "_id"
+			sort = "billing_type"
 		case "change_number_date":
-			sort = "_id"
+			sort = "change_number_date"
 		case "license_type":
-			sort = "_id"
-		case "platforms":
-			sort = "_id"
+			sort = "license_type"
 		case "status":
-			sort = "_id"
+			sort = "status"
 		default:
 			sort = "_id"
 		}
