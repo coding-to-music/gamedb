@@ -57,7 +57,7 @@ func main() {
 	session.Init()
 
 	r := chi.NewRouter()
-	// r.Use(fixRequestURLMiddleware)
+	r.Use(fixRequestURLMiddleware) // Needed for FindRoute()
 	r.Use(chiMiddleware.Compress(flate.DefaultCompression))
 	r.Use(middleware.RealIP)
 
