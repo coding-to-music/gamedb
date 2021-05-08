@@ -147,6 +147,7 @@ func appReviewsHandler(message *rabbit.Message) {
 		return reviews.Reviews[i].VotesGood > reviews.Reviews[j].VotesGood
 	})
 
+	// Update in Mongo
 	var update = bson.D{
 		{"reviews_score", score},
 		{"reviews", reviews},
