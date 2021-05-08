@@ -13,6 +13,12 @@
             <div class="card-body">
 
                 <div class="row">
+                    <div class="d-none">
+                        {{/* This div is so Chrome auto-fills this one and not the rest! */}}
+                        <label for="hidden">Hidden</label>
+                        <select multiple data-placeholder="Hidden" class="form-control form-control-chosen" id="hidden" name="hidden">
+                        </select>
+                    </div>
                     <div class="col-12 col-md-6 col-lg-4">
                         <div class="form-group">
                             <label for="filter">Filter (Must be logged in)</label>
