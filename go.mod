@@ -5,7 +5,7 @@ go 1.13
 replace github.com/getkin/kin-openapi v0.61.0 => github.com/getkin/kin-openapi v0.53.0
 
 require (
-	cloud.google.com/go/logging v1.4.0
+	cloud.google.com/go/logging v1.4.1
 	github.com/Jleagle/captcha-go v0.0.0-20201203202350-806e55b8099c
 	github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057
 	github.com/Jleagle/influxql v0.0.0-20200804190929-88324f67bffe
@@ -23,7 +23,7 @@ require (
 	github.com/ahmdrz/goinsta/v2 v2.4.5
 	github.com/antchfx/xmlquery v1.3.6 // indirect
 	github.com/antchfx/xpath v1.1.11 // indirect
-	github.com/aws/aws-sdk-go v1.38.30 // indirect
+	github.com/aws/aws-sdk-go v1.38.36 // indirect
 	github.com/badoux/checkmail v1.2.1
 	github.com/blend/go-sdk v1.1.1 // indirect
 	github.com/bwmarrin/discordgo v0.23.3-0.20210314162722-182d9b48f34b
@@ -75,7 +75,7 @@ require (
 	github.com/microcosm-cc/bluemonday v1.0.9
 	github.com/montanaflynn/stats v0.6.6
 	github.com/mssola/user_agent v0.5.2
-	github.com/nicklaw5/helix v1.13.1
+	github.com/nicklaw5/helix v1.15.0
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/olivere/elastic/v7 v7.0.24
 	github.com/oschwald/maxminddb-golang v1.8.0
@@ -96,21 +96,22 @@ require (
 	github.com/wcharczuk/go-chart v2.0.1+incompatible
 	github.com/yohcop/openid-go v1.0.0
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
-	go.mongodb.org/mongo-driver v1.5.1
+	go.mongodb.org/mongo-driver v1.5.2
+	go.uber.org/multierr v1.7.0 // indirect
 	go.uber.org/zap v1.16.0
-	golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b
+	golang.org/x/crypto v0.0.0-20210506145944-38f3c27a63bf
 	golang.org/x/exp v0.0.0-20200331195152-e8c3332aa8e5 // indirect
-	golang.org/x/image v0.0.0-20210220032944-ac19c3e999fb // indirect
+	golang.org/x/image v0.0.0-20210504121937-7319ad40d33e // indirect
 	golang.org/x/mod v0.4.2 // indirect
-	golang.org/x/net v0.0.0-20210501142056-aec3718b3fa0
+	golang.org/x/net v0.0.0-20210508051633-16afe75a6701
 	golang.org/x/oauth2 v0.0.0-20210427180440-81ed05c6b58c
-	golang.org/x/sys v0.0.0-20210426230700-d19ff857e887 // indirect
-	golang.org/x/term v0.0.0-20210429154555-c04ba851c2a4 // indirect
+	golang.org/x/sys v0.0.0-20210507161434-a76c4d0a0096 // indirect
+	golang.org/x/term v0.0.0-20210503060354-a79de5458b56 // indirect
 	golang.org/x/text v0.3.6
 	golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba
 	gonum.org/v1/gonum v0.9.1
-	google.golang.org/api v0.45.0
-	google.golang.org/genproto v0.0.0-20210429181445-86c259c2b4ab // indirect
+	google.golang.org/api v0.46.0
+	google.golang.org/genproto v0.0.0-20210506142907-4a47615972c2 // indirect
 	google.golang.org/grpc v1.37.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0
 	google.golang.org/protobuf v1.26.0
