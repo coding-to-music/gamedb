@@ -513,14 +513,14 @@ func appSamdOwnersHandler(w http.ResponseWriter, r *http.Request) {
 	for _, app := range orderedApps {
 
 		response.AddRow([]interface{}{
-			app.ID,                   // 0
-			app.GetPath(),            // 1
-			app.GetIcon(),            // 2
-			app.GetName(),            // 3
-			app.GetStoreLink(),       // 4
-			countsMap[app.ID].Count,  // 5
-			countsMap[app.ID].Owners, // 6
-			countsMap[app.ID].Order,  // 7
+			app.ID,                     // 0
+			app.GetPath() + "#similar", // 1
+			app.GetIcon(),              // 2
+			app.GetName(),              // 3
+			app.GetStoreLink(),         // 4
+			countsMap[app.ID].Count,    // 5
+			countsMap[app.ID].Owners,   // 6
+			countsMap[app.ID].Order,    // 7
 		})
 	}
 
