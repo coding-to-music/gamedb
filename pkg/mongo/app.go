@@ -583,6 +583,10 @@ func (app App) GetDevelopers() (stats []Stat, err error) {
 	return GetStatsByType(StatsTypeDevelopers, app.Developers, app.ID)
 }
 
+func (app App) HasSameOwners() bool {
+	return app.RelatedOwnersAppIDsDate.Unix() > 0
+}
+
 func (app App) GetDevelopersHTML() template.HTML {
 
 	var ret []string

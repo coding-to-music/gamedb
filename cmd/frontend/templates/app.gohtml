@@ -901,41 +901,45 @@
                     <div class="tab-pane" id="similar" role="tabpanel">
 
                         <div class="row">
-                            <div class="col-6 col-md-4 col-lg-3 mb-3">
+                            <div class="col-6 col-md-4 mb-3">
                                 <div role="button" class="btn btn-success btn-block mb-0 no-cursor-pointer">
-                                    <strong>Score is calculated using:</strong>
-                                    <br><code>(Same / (Total ^ 0.5)</code>
+                                    Score is calculated using:<br>
+                                    <strong>(Same / (Total ^ 0.5)</strong>
                                 </div>
                             </div>
-                            <div class="col-6 col-md-4 col-lg-3 mb-3">
-                                <div role="button" class="btn btn-success btn-block mb-0 no-cursor-pointer">
-                                    Scanning for same owners is very costly so does not get updated much
+                            {{ if not .App.HasSameOwners }}
+                                <div class="col-6 col-md-4 mb-3">
+                                    <div role="button" class="btn btn-success btn-block mb-0 no-cursor-pointer">
+                                        This app has not been scanned yet for same owners
+                                    </div>
                                 </div>
+                            {{ end }}
+                        </div>
+
+                        {{ if .App.HasSameOwners }}
+                            <h5>Apps with same owners</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover table-striped" data-row-type="games" data-order='[[3, "desc"]]' id="similar-owners" data-path="/games/{{ .App.ID }}/same-owners.json">
+                                    <thead class="thead-light">
+                                    <tr>
+                                        <th>Game</th>
+                                        <th>Same Owners</th>
+                                        <th>Total Owners</th>
+                                        <th>Score</th>
+                                        <th><i class="fab fa-steam"></i></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
                             </div>
-                        </div>
-
-                        <h5>Similar by owners</h5>
-                        <div class="table-responsive mb-4">
-                            <table class="table table-hover table-striped" data-row-type="games" data-order='[[3, "desc"]]' id="similar-owners" data-path="/games/{{ .App.ID }}/same-owners.json">
-                                <thead class="thead-light">
-                                <tr>
-                                    <th>Game</th>
-                                    <th>Same Owners</th>
-                                    <th>Total Owners</th>
-                                    <th>Score</th>
-                                    <th><i class="fab fa-steam"></i></th>
-                                </tr>
-                                </thead>
-                                <tbody>
-
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <h5>Similar by Tags</h5>
-                        <div class="table-responsive" id="similar-tags">
-                            <i class="fas fa-spinner fa-spin"></i>
-                        </div>
+                        {{ else }}
+                            <h5>Apps with similar tags</h5>
+                            <div class="table-responsive" id="similar-tags">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
+                        {{ end }}
 
                     </div>
 
