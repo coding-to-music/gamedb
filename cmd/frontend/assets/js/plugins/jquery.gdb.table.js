@@ -1,4 +1,4 @@
-;(function ($, window, document, user, undefined) {
+;(function ($, window, document, user) {
 
     'use strict';
 
@@ -127,7 +127,7 @@
             const name = getFieldName($field);
             const value = getFieldValue($field);
 
-            if (name === undefined) {
+            if (typeof (name) === 'undefined') {
                 logLocal('Search field missing name field');
             }
 
