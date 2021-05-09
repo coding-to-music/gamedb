@@ -56,7 +56,7 @@ func (c AppsQueueAll) work() (err error) {
 		keepGoing = apps.HaveMoreResults
 	}
 
-	log.InfoS("Found " + strconv.Itoa(count) + " apps")
+	log.Info("Found " + strconv.Itoa(count) + " apps")
 
 	return nil
 }

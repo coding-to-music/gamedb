@@ -592,7 +592,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 					log.ErrS(err)
 				} else {
 
-					log.InfoS("Found " + strconv.Itoa(len(apps.Apps)) + " apps")
+					log.Info("Found " + strconv.Itoa(len(apps.Apps)) + " apps")
 
 					for _, app := range apps.Apps {
 						appIDs = append(appIDs, app.AppID)

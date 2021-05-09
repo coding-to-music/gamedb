@@ -36,7 +36,7 @@ func (syncStates) run() {
 
 	for _, v := range countries {
 
-		log.InfoS(v)
+		log.Info(v)
 
 		var urlx = "https://steamcommunity.com/actions/EditProcess?sId=76561197968626192"
 		var form = url.Values{}

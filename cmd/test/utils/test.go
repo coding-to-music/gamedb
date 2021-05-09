@@ -11,5 +11,5 @@ func (testUtil) name() string {
 }
 
 func (testUtil) run() {
-	log.InfoS("test")
+	log.Info("test")
 }

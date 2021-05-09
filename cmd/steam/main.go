@@ -77,30 +77,30 @@ func main() {
 			switch e := event.(type) {
 			case *gosteam.ConnectedEvent:
 
-				log.InfoS("Steam: Connected")
+				log.Info("Steam: Connected")
 				go steamClient.Auth.LogOn(&loginDetails)
 
 			case *gosteam.LoggedOnEvent:
 
 				// Load change checker
-				log.InfoS("Steam: Logged in")
+				log.Info("Steam: Logged in")
 				steamLoggedOn = true
 				go checkForChanges()
 
 				// Load consumer
-				log.InfoS("Starting Steam consumers")
+				log.Info("Starting Steam consumers")
 				consumers.Init(consumers.QueueSteamDefinitions)
 
 			case *gosteam.LoggedOffEvent:
 
-				log.InfoS("Steam: Logged out")
+				log.Info("Steam: Logged out")
 				steamLoggedOn = false
 				go steamClient.Disconnect()
 
 			case *gosteam.DisconnectedEvent:
 
 				// Disconnected
-				log.InfoS("Steam: Disconnected")
+				log.Info("Steam: Disconnected")
 				steamLoggedOn = false
 
 				// Reconnect
@@ -117,11 +117,11 @@ func main() {
 			case *gosteam.LogOnFailedEvent:
 
 				// Disconnects
-				log.InfoS("Steam: Login failed")
+				log.Info("Steam: Login failed")
 
 			case *gosteam.MachineAuthUpdateEvent:
 
-				log.InfoS("Steam: Updating auth hash, it should no longer ask for auth")
+				log.Info("Steam: Updating auth hash, it should no longer ask for auth")
 				loginDetails.SentryFileHash = e.Hash
 				err = os.WriteFile(steamSentryFilename, e.Hash, 0666)
 				if err != nil {
@@ -307,7 +307,7 @@ func (ph packetHandler) handleChangesSince(packet *protocol.Packet) {
 	if len(appChanges) > 0 {
 
 		if config.IsLocal() {
-			log.InfoS(strconv.Itoa(len(appChanges)) + " apps since change " + changes)
+			log.Info(strconv.Itoa(len(appChanges)) + " apps since change " + changes)
 		}
 
 		for _, appChange := range appChanges {
@@ -326,7 +326,7 @@ func (ph packetHandler) handleChangesSince(packet *protocol.Packet) {
 	if len(packageChanges) > 0 {
 
 		if config.IsLocal() {
-			log.InfoS(strconv.Itoa(len(packageChanges)) + " pack since change " + changes)
+			log.Info(strconv.Itoa(len(packageChanges)) + " pack since change " + changes)
 		}
 
 		for _, packageChange := range packageChanges {

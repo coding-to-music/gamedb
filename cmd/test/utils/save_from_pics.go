@@ -46,5 +46,5 @@ func (saveFromPics) run() {
 		offset += limit
 	}
 
-	log.InfoS("Done")
+	log.Info("Done")
 }

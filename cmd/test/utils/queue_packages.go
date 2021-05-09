@@ -49,11 +49,11 @@ func (queuePackages) run() {
 			if c.Messages >= 10 && !locked {
 				locked = true
 				wg.Add(1)
-				log.InfoS(time.Now().Format(helpers.DateSQL) + " locked")
+				log.Info(time.Now().Format(helpers.DateSQL) + " locked")
 			} else if c.Messages < 10 && locked {
 				locked = false
 				wg.Done()
-				log.InfoS(time.Now().Format(helpers.DateSQL) + " unlocked")
+				log.Info(time.Now().Format(helpers.DateSQL) + " unlocked")
 			}
 		}
 	}()

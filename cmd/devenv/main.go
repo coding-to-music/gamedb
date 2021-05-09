@@ -130,7 +130,7 @@ func startAll(cfg processesConfig, only ...string) {
 	wg.Wait()
 
 	if len(message) > 0 {
-		log.InfoS("started: " + strings.Join(message, ", "))
+		log.Info("started: " + strings.Join(message, ", "))
 	}
 }
 
@@ -176,7 +176,7 @@ func stopAll(cfg processesConfig, only ...string) {
 	wg.Wait()
 
 	if len(message) > 0 {
-		log.InfoS("quited: " + strings.Join(message, ", "))
+		log.Info("quited: " + strings.Join(message, ", "))
 	}
 }
 
@@ -260,7 +260,7 @@ func watchFiles(cfg processesConfig) {
 			if len(processesToBuild) > 0 {
 
 				if _, ok := processesToBuild[""]; ok {
-					log.InfoS("building all")
+					log.Info("building all")
 					stopAll(cfg)
 					startAll(cfg)
 				} else {

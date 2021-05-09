@@ -222,7 +222,7 @@ func (c ProductsUpdateKeys) work() (err error) {
 		}
 	}
 
-	log.InfoS("Removing " + strconv.Itoa(deleted) + " keys")
+	log.Info("Removing " + strconv.Itoa(deleted) + " keys")
 
 	return nil
 }
