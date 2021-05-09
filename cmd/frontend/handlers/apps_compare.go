@@ -82,6 +82,11 @@ func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	playersCount, err := mongo.CountDocuments(mongo.CollectionPlayers, nil, 0)
+	if err != nil {
+		log.Err("Counting players", zap.Error(err))
+	}
+
 	// Template
 	t := appsCompareTemplate{}
 	t.fill(w, r, "apps_compare", "Compare Games", template.HTML(strings.Join(names, " vs ")))
@@ -89,6 +94,7 @@ func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 	t.Apps = apps
 	t.IDs = strings.Join(ids, ",")
 	t.GroupIDs = strings.Join(groupIDs, ",")
+	t.PlayersCount = playersCount
 
 	b, err := json.Marshal(namesMap)
 	if err != nil {
@@ -138,12 +144,13 @@ func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 
 type appsCompareTemplate struct {
 	globalTemplate
-	Apps       []mongo.App
-	IDs        string
-	GroupIDs   string
-	AppNames   template.JS
-	GroupNames template.JS
-	GoogleJSON []template.JS
+	Apps         []mongo.App
+	IDs          string
+	GroupIDs     string
+	AppNames     template.JS
+	GroupNames   template.JS
+	GoogleJSON   []template.JS
+	PlayersCount int64
 }
 
 type appsCompareGoogleTemplate struct {
