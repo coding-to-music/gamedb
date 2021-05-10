@@ -79,10 +79,11 @@ func (c CommandGroup) Output(_ string, _ steamapi.ProductCC, inputs map[string]s
 		return message, nil
 	}
 
-	var abbr = groups[0].GetAbbr()
-	if abbr == "" {
-		abbr = "-"
-	}
+	// var abbr = groups[0].GetAbbr()
+	// if abbr == "" {
+	// 	abbr = "-"
+	// }
+
 	var headline = groups[0].GetHeadline()
 	if headline == "" {
 		headline = "-"

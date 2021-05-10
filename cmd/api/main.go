@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"github.com/Jleagle/rate-limit-go"
-	codegenMiddleware "github.com/deepmap/oapi-codegen/pkg/chi-middleware"
 	"github.com/gamedb/gamedb/cmd/api/generated"
 	"github.com/gamedb/gamedb/pkg/api"
 	"github.com/gamedb/gamedb/pkg/config"
@@ -25,7 +24,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/session"
-	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/go-chi/chi/v5"
 	chiMiddleware "github.com/go-chi/chi/v5/middleware"
 	influx "github.com/influxdata/influxdb1-client"
@@ -118,20 +116,20 @@ func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, http.StatusText(http.StatusOK), http.StatusOK)
 }
 
-var validateOptions = &codegenMiddleware.Options{
-	Options: openapi3filter.Options{
-		MultiError:            true,
-		IncludeResponseStatus: true,
-		AuthenticationFunc: func(ctx context.Context, input *openapi3filter.AuthenticationInput) error {
-			return nil // Skip auth check for now, done elseware
-		},
-	},
-}
+// var validateOptions = &codegenMiddleware.Options{
+// 	Options: openapi3filter.Options{
+// 		MultiError:            true,
+// 		IncludeResponseStatus: true,
+// 		AuthenticationFunc: func(ctx context.Context, input *openapi3filter.AuthenticationInput) error {
+// 			return nil // Skip auth check for now, done elseware
+// 		},
+// 	},
+// }
 
 // Middlewares
-func validateMiddlewear(next http.HandlerFunc) http.HandlerFunc {
-	return codegenMiddleware.OapiRequestValidatorWithOptions(api.GetGlobalSteamResolved(), validateOptions)(next).ServeHTTP
-}
+// func validateMiddlewear(next http.HandlerFunc) http.HandlerFunc {
+// 	return codegenMiddleware.OapiRequestValidatorWithOptions(api.GetGlobalSteamResolved(), validateOptions)(next).ServeHTTP
+// }
 
 var apiKeyRegexp = regexp.MustCompile("^[A-Z0-9]{20}$")
 

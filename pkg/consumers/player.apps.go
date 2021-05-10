@@ -126,9 +126,9 @@ func playerGamesHandler(message *rabbit.Message) {
 		}
 
 		//
-		for code, price := range gameRow.Prices {
+		for code := range gameRow.Prices {
 
-			price = gameRow.Prices.Get(code)
+			price := gameRow.Prices.Get(code)
 
 			appPrices[gameRow.ID][string(code)] = price.Initial // Not the sale price
 

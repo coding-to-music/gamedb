@@ -655,7 +655,7 @@ func GetGlobalSteamResolved() *openapi3.Swagger {
 
 	if resolved == nil {
 
-		x := &*GetGlobalSteam()
+		x := GetGlobalSteam()
 
 		err := openapi3.NewSwaggerLoader().ResolveRefsIn(x, nil)
 		if err != nil {
