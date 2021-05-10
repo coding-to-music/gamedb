@@ -25,11 +25,11 @@ func RateLimiterBlock(limiters *rate.Limiters, handler http.HandlerFunc) func(ht
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 			reservation := limiters.GetLimiter(r.RemoteAddr).Reserve()
+			if reservation.Delay() > 0 {
 
-			SetRateLimitHeaders(w, limiters, reservation)
-
-			if !reservation.OK() {
+				SetRateLimitHeaders(w, limiters, reservation)
 				handler(w, r)
+				reservation.Cancel()
 				return
 			}
 

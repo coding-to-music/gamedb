@@ -221,13 +221,12 @@ func rateLimitMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 			limiters = publicLimiter
 		}
 
-		limiter := limiters.GetLimiter(r.RemoteAddr)
+		reservation := limiters.GetLimiter(r.RemoteAddr).Reserve()
+		if reservation.Delay() > 0 {
 
-		if !limiter.Allow() {
-
-			middleware.SetRateLimitHeaders(w, limiters, limiter.Reserve())
-
+			middleware.SetRateLimitHeaders(w, limiters, reservation)
 			rateLimitedHandler(w, r)
+			reservation.Cancel()
 			return
 		}
 
