@@ -231,6 +231,7 @@ func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 }
 
 var (
+	ipLimiter      = rate.New(time.Second*1, rate.WithBurst(10), rate.WithBucketName("ip"))
 	donatorLimiter = rate.New(time.Second*1, rate.WithBurst(10), rate.WithBucketName("donator"))
 	publicLimiter  = rate.New(time.Second*5, rate.WithBurst(1), rate.WithBucketName("free"))
 )
@@ -252,6 +253,16 @@ func rateLimitMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		reservation := limiters.GetLimiter(key).Reserve()
+		if reservation.Delay() > 0 {
+
+			reservation.Cancel()
+
+			rate.SetRateLimitHeaders(w, limiters, reservation)
+			returnResponse(w, r, http.StatusTooManyRequests, generated.MessageResponse{Error: http.StatusText(http.StatusTooManyRequests)})
+			return
+		}
+
+		reservation = ipLimiter.GetLimiter(key).Reserve()
 		if reservation.Delay() > 0 {
 
 			reservation.Cancel()
