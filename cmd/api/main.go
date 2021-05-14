@@ -60,6 +60,7 @@ func main() {
 	r.Use(middleware.RealIP)
 
 	r.Get("/", rootHandler)
+	r.Get("/robots.txt", robotsHandler)
 	r.Get("/health-check", healthCheckHandler)
 
 	generated.HandlerWithOptions(Server{}, generated.ChiServerOptions{
@@ -104,8 +105,13 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func rateLimitedHandler(w http.ResponseWriter, r *http.Request) {
-	returnResponse(w, r, http.StatusTooManyRequests, generated.MessageResponse{Error: http.StatusText(http.StatusTooManyRequests)})
+func robotsHandler(w http.ResponseWriter, r *http.Request) {
+
+	// Only allow root
+	_, err := w.Write([]byte("user-agent: *\nAllow: /$\nDisallow: /"))
+	if err != nil {
+		log.ErrS(err)
+	}
 }
 
 func notFoundHandler(w http.ResponseWriter, r *http.Request) {
