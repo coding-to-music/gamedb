@@ -37,6 +37,7 @@ const (
 
 	ctxUserIDField    contextKey = "user_id"
 	ctxUserLevelField contextKey = "user_level"
+	ctxUserKeyField   contextKey = "user_key"
 )
 
 type Server struct {
@@ -67,8 +68,9 @@ func main() {
 		BaseRouter: r,
 		Middlewares: []generated.MiddlewareFunc{
 			// validateMiddlewear,
-			rateLimitMiddlewear,
-			authMiddlewear,
+			rateLimitMiddleware, // Third
+			authMiddlewear,      // Second
+			apiKeyMiddlewear,    // First
 		},
 	})
 
@@ -139,11 +141,9 @@ func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 
 var apiKeyRegexp = regexp.MustCompile("^[A-Z0-9]{20}$")
 
-func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
-
+func apiKeyMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		// Check API key
 		key := func() string {
 
 			key := r.URL.Query().Get(keyField)
@@ -177,6 +177,22 @@ func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
+		r = r.WithContext(context.WithValue(r.Context(), ctxUserKeyField, key))
+
+		next.ServeHTTP(w, r)
+	}
+}
+
+func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
+
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		key, ok := r.Context().Value(ctxUserKeyField).(string)
+		if !ok || key == "" {
+			returnResponse(w, r, http.StatusInternalServerError, generated.MessageResponse{Error: "Can't find API key"})
+			return
+		}
+
 		// Check user has access to api
 		user, err := mysql.GetUserByAPIKey(key)
 		if err == mysql.ErrRecordNotFound {
@@ -188,7 +204,14 @@ func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		route, _, err := api.GetRouter().FindRoute(r)
+		router, err := api.GetRouter()
+		if err != nil {
+			log.Err("getting router", zap.Error(err))
+			returnResponse(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		route, _, err := router.FindRoute(r)
 		if err != nil {
 			log.Err("missing route", zap.Error(err), zap.String("method", r.Method), zap.String("url", r.URL.String()))
 			notFoundHandler(w, r)
@@ -208,34 +231,38 @@ func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 }
 
 var (
-	donatorLimiter = rate.New(time.Second*1, rate.WithBurst(10))
-	publicLimiter  = rate.New(time.Second*5, rate.WithBurst(1))
+	donatorLimiter = rate.New(time.Second*1, rate.WithBurst(10), rate.WithBucketName("donator"))
+	publicLimiter  = rate.New(time.Second*5, rate.WithBurst(1), rate.WithBucketName("free"))
 )
 
-func rateLimitMiddlewear(next http.HandlerFunc) http.HandlerFunc {
-
-	return func(w http.ResponseWriter, r *http.Request) {
-
-		level, _ := r.Context().Value(ctxUserLevelField).(mysql.UserLevel)
+func rateLimitMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		var limiters *rate.Limiters
+		level, _ := r.Context().Value(ctxUserLevelField).(mysql.UserLevel)
 		if level > mysql.UserLevelFree {
 			limiters = donatorLimiter
 		} else {
 			limiters = publicLimiter
 		}
 
-		reservation := limiters.GetLimiter(r.RemoteAddr).Reserve()
+		key, ok := r.Context().Value(ctxUserKeyField).(string)
+		if !ok {
+			log.Err("invalid api key")
+		}
+
+		reservation := limiters.GetLimiter(key).Reserve()
 		if reservation.Delay() > 0 {
 
-			middleware.SetRateLimitHeaders(w, limiters, reservation)
-			rateLimitedHandler(w, r)
 			reservation.Cancel()
+
+			rate.SetRateLimitHeaders(w, limiters, reservation)
+			returnResponse(w, r, http.StatusTooManyRequests, generated.MessageResponse{Error: http.StatusText(http.StatusTooManyRequests)})
 			return
 		}
 
 		next.ServeHTTP(w, r)
-	}
+	})
 }
 
 func fixRequestURLMiddleware(next http.Handler) http.Handler {

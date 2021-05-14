@@ -12,7 +12,7 @@ require (
 	github.com/Jleagle/memcache-go v0.0.0-20210309190441-636ebc04a889
 	github.com/Jleagle/patreon-go v0.0.0-20201006180837-366bfaa6710a
 	github.com/Jleagle/rabbit-go v0.0.0-20210115203259-266db76b636e
-	github.com/Jleagle/rate-limit-go v0.0.0-20210325205318-d63b67037cea
+	github.com/Jleagle/rate-limit-go v0.0.0-20210514120325-52a5462241e1
 	github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233
 	github.com/Jleagle/sitemap-go v0.0.0-20201217201247-75f3818f336a
 	github.com/Jleagle/steam-go v0.0.0-20210211214415-6e5c1aecbba1
@@ -108,7 +108,6 @@ require (
 	golang.org/x/sys v0.0.0-20210507161434-a76c4d0a0096 // indirect
 	golang.org/x/term v0.0.0-20210503060354-a79de5458b56 // indirect
 	golang.org/x/text v0.3.6
-	golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba
 	gonum.org/v1/gonum v0.9.1
 	google.golang.org/api v0.46.0
 	google.golang.org/genproto v0.0.0-20210506142907-4a47615972c2 // indirect

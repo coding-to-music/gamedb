@@ -5,7 +5,6 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/routers"
 	"github.com/getkin/kin-openapi/routers/legacy"
@@ -644,48 +643,53 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 }
 
 var (
-	resolved     *openapi3.Swagger
-	resolvedLock sync.Mutex
+	globalResolved     *openapi3.Swagger
+	globalResolvedLock sync.Mutex
 )
 
-func GetGlobalSteamResolved() *openapi3.Swagger {
+func GetGlobalSteamResolved() (*openapi3.Swagger, error) {
 
-	resolvedLock.Lock()
-	defer resolvedLock.Unlock()
+	globalResolvedLock.Lock()
+	defer globalResolvedLock.Unlock()
 
-	if resolved == nil {
+	if globalResolved == nil {
 
-		x := GetGlobalSteam()
-
-		err := openapi3.NewSwaggerLoader().ResolveRefsIn(x, nil)
+		swagger := GetGlobalSteam()
+		err := openapi3.NewSwaggerLoader().ResolveRefsIn(swagger, nil)
 		if err != nil {
-			log.ErrS(err)
+			return nil, err
 		}
 
-		resolved = x
+		globalResolved = swagger
 	}
 
-	return resolved
+	return globalResolved, nil
 }
 
 var (
-	router     routers.Router
-	routerLock sync.Mutex
+	globalRouter     routers.Router
+	globalRouterLock sync.Mutex
 )
 
-func GetRouter() routers.Router {
+func GetRouter() (routers.Router, error) {
 
-	routerLock.Lock()
-	defer routerLock.Unlock()
+	globalRouterLock.Lock()
+	defer globalRouterLock.Unlock()
 
-	if router == nil {
+	if globalRouter == nil {
 
-		var err error
-		router, err = legacy.NewRouter(GetGlobalSteamResolved())
+		resolved, err := GetGlobalSteamResolved()
 		if err != nil {
-			log.ErrS(err)
+			return nil, err
 		}
+
+		router, err := legacy.NewRouter(resolved)
+		if err != nil {
+			return nil, err
+		}
+
+		globalRouter = router
 	}
 
-	return router
+	return globalRouter, nil
 }

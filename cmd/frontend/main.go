@@ -81,8 +81,6 @@ func main() {
 		}
 	}
 
-	var limiter = rate.New(time.Second, rate.WithBurst(10))
-
 	// Routes
 	r := chi.NewRouter()
 	r.Use(chiMiddleware.RedirectSlashes)
@@ -90,7 +88,7 @@ func main() {
 	r.Use(middleware.MiddlewareCors())
 	r.Use(middleware.RealIP)
 	r.Use(chiMiddleware.Compress(flate.DefaultCompression))
-	r.Use(middleware.RateLimiterWait(limiter))
+	r.Use(rateLimitMiddleware)
 
 	// Pages
 	r.Mount("/{type:(categories|developers|genres|publishers|tags)}", handlers.StatsListRouter())
@@ -218,4 +216,20 @@ func main() {
 		mongo.Close,
 		memcache.Close,
 	)
+}
+
+var limiters = rate.New(time.Second, rate.WithBurst(10))
+
+func rateLimitMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		err := limiters.GetLimiter(r.RemoteAddr).Wait(r.Context())
+		if err != nil {
+			log.ErrS(err)
+			handlers.Error500Handler(w, r)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }
