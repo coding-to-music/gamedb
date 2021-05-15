@@ -66,6 +66,7 @@ require (
 	github.com/karrick/godirwalk v1.16.1 // indirect
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/klauspost/compress v1.12.2 // indirect
+	github.com/labstack/echo/v4 v4.3.0 // indirect
 	github.com/lib/pq v1.3.0 // indirect
 	github.com/mailjet/mailjet-apiv3-go v0.0.0-20201009050126-c24bc15a9394
 	github.com/mattn/go-runewidth v0.0.12 // indirect
@@ -99,15 +100,16 @@ require (
 	go.mongodb.org/mongo-driver v1.5.2
 	go.uber.org/multierr v1.7.0 // indirect
 	go.uber.org/zap v1.16.0
-	golang.org/x/crypto v0.0.0-20210506145944-38f3c27a63bf
+	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
 	golang.org/x/exp v0.0.0-20200331195152-e8c3332aa8e5 // indirect
 	golang.org/x/image v0.0.0-20210504121937-7319ad40d33e // indirect
 	golang.org/x/mod v0.4.2 // indirect
-	golang.org/x/net v0.0.0-20210508051633-16afe75a6701
+	golang.org/x/net v0.0.0-20210510120150-4163338589ed
 	golang.org/x/oauth2 v0.0.0-20210427180440-81ed05c6b58c
-	golang.org/x/sys v0.0.0-20210507161434-a76c4d0a0096 // indirect
+	golang.org/x/sys v0.0.0-20210514084401-e8d321eab015 // indirect
 	golang.org/x/term v0.0.0-20210503060354-a79de5458b56 // indirect
 	golang.org/x/text v0.3.6
+	golang.org/x/tools v0.1.1 // indirect
 	gonum.org/v1/gonum v0.9.1
 	google.golang.org/api v0.46.0
 	google.golang.org/genproto v0.0.0-20210506142907-4a47615972c2 // indirect

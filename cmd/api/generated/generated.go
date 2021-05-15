@@ -11,6 +11,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
+	"path"
 	"strings"
 
 	"github.com/deepmap/oapi-codegen/pkg/runtime"
@@ -22,6 +24,13 @@ import (
 const (
 	KeyHeaderScopes = "keyHeader.Scopes"
 	KeyQueryScopes  = "keyQuery.Scopes"
+)
+
+// Defines values for OrderParamDesc.
+const (
+	Asc OrderParamDesc = "asc"
+
+	Desc OrderParamDesc = "desc"
 )
 
 // ArticleSchema defines model for article-schema.
@@ -175,12 +184,6 @@ type OffsetParam int
 // OrderParamDesc defines model for order-param-desc.
 type OrderParamDesc string
 
-// List of OrderParamDesc
-const (
-	OrderParamDesc_asc  OrderParamDesc = "asc"
-	OrderParamDesc_desc OrderParamDesc = "desc"
-)
-
 // List of articles
 type ArticlesResponse struct {
 	Articles   []ArticleSchema  `json:"articles"`
@@ -239,60 +242,84 @@ type SimilarGamesResponse struct {
 
 // GetArticlesParams defines parameters for GetArticles.
 type GetArticlesParams struct {
-	Offset *OffsetParam    `json:"offset,omitempty"`
-	Limit  *LimitParam     `json:"limit,omitempty"`
-	Order  *OrderParamDesc `json:"order,omitempty"`
-	Sort   *string         `json:"sort,omitempty"`
-	Ids    *[]int32        `json:"ids,omitempty"`
-	AppIds *[]int32        `json:"app_ids,omitempty"`
-	Feed   *string         `json:"feed,omitempty"`
+	Offset *OffsetParam            `json:"offset,omitempty"`
+	Limit  *LimitParam             `json:"limit,omitempty"`
+	Order  *GetArticlesParamsOrder `json:"order,omitempty"`
+	Sort   *string                 `json:"sort,omitempty"`
+	Ids    *[]int32                `json:"ids,omitempty"`
+	AppIds *[]int32                `json:"app_ids,omitempty"`
+	Feed   *string                 `json:"feed,omitempty"`
 }
+
+// GetArticlesParamsOrder defines parameters for GetArticles.
+type GetArticlesParamsOrder string
 
 // GetGamesParams defines parameters for GetGames.
 type GetGamesParams struct {
-	Offset     *OffsetParam    `json:"offset,omitempty"`
-	Limit      *LimitParam     `json:"limit,omitempty"`
-	Order      *OrderParamDesc `json:"order,omitempty"`
-	Sort       *string         `json:"sort,omitempty"`
-	Ids        *[]int32        `json:"ids,omitempty"`
-	Tags       *[]int32        `json:"tags,omitempty"`
-	Genres     *[]int32        `json:"genres,omitempty"`
-	Categories *[]int32        `json:"categories,omitempty"`
-	Developers *[]int32        `json:"developers,omitempty"`
-	Publishers *[]int32        `json:"publishers,omitempty"`
-	Platforms  *[]string       `json:"platforms,omitempty"`
+	Offset     *OffsetParam         `json:"offset,omitempty"`
+	Limit      *LimitParam          `json:"limit,omitempty"`
+	Order      *GetGamesParamsOrder `json:"order,omitempty"`
+	Sort       *string              `json:"sort,omitempty"`
+	Ids        *[]int32             `json:"ids,omitempty"`
+	Tags       *[]int32             `json:"tags,omitempty"`
+	Genres     *[]int32             `json:"genres,omitempty"`
+	Categories *[]int32             `json:"categories,omitempty"`
+	Developers *[]int32             `json:"developers,omitempty"`
+	Publishers *[]int32             `json:"publishers,omitempty"`
+	Platforms  *[]string            `json:"platforms,omitempty"`
 }
+
+// GetGamesParamsOrder defines parameters for GetGames.
+type GetGamesParamsOrder string
 
 // GetGroupsParams defines parameters for GetGroups.
 type GetGroupsParams struct {
-	Offset *OffsetParam    `json:"offset,omitempty"`
-	Limit  *LimitParam     `json:"limit,omitempty"`
-	Order  *OrderParamDesc `json:"order,omitempty"`
-	Sort   *string         `json:"sort,omitempty"`
-	Ids    *[]int64        `json:"ids,omitempty"`
+	Offset *OffsetParam          `json:"offset,omitempty"`
+	Limit  *LimitParam           `json:"limit,omitempty"`
+	Order  *GetGroupsParamsOrder `json:"order,omitempty"`
+	Sort   *GetGroupsParamsSort  `json:"sort,omitempty"`
+	Ids    *[]int64              `json:"ids,omitempty"`
 }
+
+// GetGroupsParamsOrder defines parameters for GetGroups.
+type GetGroupsParamsOrder string
+
+// GetGroupsParamsSort defines parameters for GetGroups.
+type GetGroupsParamsSort string
 
 // GetPackagesParams defines parameters for GetPackages.
 type GetPackagesParams struct {
-	Offset      *OffsetParam    `json:"offset,omitempty"`
-	Limit       *LimitParam     `json:"limit,omitempty"`
-	Order       *OrderParamDesc `json:"order,omitempty"`
-	Sort        *string         `json:"sort,omitempty"`
-	Ids         *[]int32        `json:"ids,omitempty"`
-	BillingType *[]int32        `json:"billingType,omitempty"`
-	LicenseType *[]int32        `json:"licenseType,omitempty"`
-	Status      *[]int32        `json:"status,omitempty"`
+	Offset      *OffsetParam            `json:"offset,omitempty"`
+	Limit       *LimitParam             `json:"limit,omitempty"`
+	Order       *GetPackagesParamsOrder `json:"order,omitempty"`
+	Sort        *GetPackagesParamsSort  `json:"sort,omitempty"`
+	Ids         *[]int32                `json:"ids,omitempty"`
+	BillingType *[]int32                `json:"billingType,omitempty"`
+	LicenseType *[]int32                `json:"licenseType,omitempty"`
+	Status      *[]int32                `json:"status,omitempty"`
 }
+
+// GetPackagesParamsOrder defines parameters for GetPackages.
+type GetPackagesParamsOrder string
+
+// GetPackagesParamsSort defines parameters for GetPackages.
+type GetPackagesParamsSort string
 
 // GetPlayersParams defines parameters for GetPlayers.
 type GetPlayersParams struct {
-	Offset    *OffsetParam    `json:"offset,omitempty"`
-	Limit     *LimitParam     `json:"limit,omitempty"`
-	Order     *OrderParamDesc `json:"order,omitempty"`
-	Sort      *string         `json:"sort,omitempty"`
-	Continent *[]string       `json:"continent,omitempty"`
-	Country   *[]string       `json:"country,omitempty"`
+	Offset    *OffsetParam           `json:"offset,omitempty"`
+	Limit     *LimitParam            `json:"limit,omitempty"`
+	Order     *GetPlayersParamsOrder `json:"order,omitempty"`
+	Sort      *GetPlayersParamsSort  `json:"sort,omitempty"`
+	Continent *[]string              `json:"continent,omitempty"`
+	Country   *[]string              `json:"country,omitempty"`
 }
+
+// GetPlayersParamsOrder defines parameters for GetPlayers.
+type GetPlayersParamsOrder string
+
+// GetPlayersParamsSort defines parameters for GetPlayers.
+type GetPlayersParamsSort string
 
 // Getter for additional properties for GameSchema_Prices. Returns the specified
 // element and whether it was found
@@ -1157,17 +1184,17 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/+wb227juPVXAraPcmxnkqLjt0EfpoNu0bSzfQoMg5aOZW4kSktSnhgD/3vBi6gLSVuW",
-	"HS92um+WdO43HvLQ31Fc5GVBgQqOFt9RiRnOQQBTTxnJiZiod/KRULRAv1bA9ihCFOeAFhoERYjHW8ix",
+	"H4sIAAAAAAAC/+wb227juPVXAraPcmxnkqLjt0GBTgfdomln+xQYBi0dy9xIlJakPDEG/veCF1EXkrYs",
+	"O17stG+WdO43HvLQ31Fc5GVBgQqOFt9RiRnOQQBTTxnJiZiod/KRULRAv1bA9ihCFOeAFhoERYjHW8ix",
 	"hEpgg6tMoMV8FqEcv5G8yuXDTD4Sah4jJPalJECogBQYOhwiVGw2HE4w1DB+jm0OMz8HlgDTDCYJ8DjI",
 	"RcL5mSCFFyGgks0LwupJvVxanlwwQlN0kDwZ8LKgHJRJMRMkzoBP6rfyZVxQAVSo72WZkRgLUtDpL7yg",
-	"8l1bCB4zUsqvaIF+IlzcFZu7miaKUMmKEpggXWZKSwG5+vFnBhu0QH+aNp6fag58ahAmhuPB6oMZw3v5",
+	"8l1bCB4zUsqvaIF+IlzcFZu7miaKUMmKEpggXWZKSwG5+vFHBhu0QH+YNp6fag58ahAmhuPB6oMZw3v5",
 	"DIwVTJLpKRqhEqeEYi3acS4NpGWkzPRrRRgk0qYtWhFqqae5L5VZT9jiEKEU5zDOzl0zhnVOVbQc11ZJ",
 	"EdBT4R9T69OdAjGsrhs1Zcmju29EbO865j5H9+GR1bGCG1bvFjxayiGRoyGlYqyoyquaWlM8x7YaYbBx",
-	"JfhvYt1asQHm1aCHCOXAOU5HZuYx4WvCVnJHmH9qCG2T+BWn102pmuYZnrYoQ31tEH4Lb7fUOyOdygzv",
+	"JfhvYt1asQHm1aCHCOXAOU5HZuYx4WvCVnJHmH9oCG2T+BWn102pmuYZnrYoQ31tEH4Lb7fUOyOdygzv",
 	"gb1vHdY8TqqrJQmpqmkcr8YGyLLk76zXJa60Mg6Pra6B+qF1NDYMqyGhUcMeIsRJTjLMJr/z1a2txijz",
 	"nblMacUM17viG1XmPNT9arv5m4SiDpflisTamo766mMiP20KlmOh2+gPD8jtqiOEK7ENmNF4kXs/JlhA",
-	"n8VfHr0sNgCJl4b8sMrwGrLwZ/12kCpBg7jGCEgqiMjAS6JiPhl7UUESVNPQGNa8LWMa03W0NzZqq2zd",
+	"n8WfHr0sNgCJl4b8sMrwGrLwZ/12kCpBg7jGCEgqiMjAS6JiPhl7UUESVNPQGNa8LWMa03W0NzZqq2zd",
 	"GDXONiou6/Y4FB0xFpAWjJyTBAKLI8tSAjvIJIurUUyBsuvJd8L1rqdzEDhmRJB4xeOCDQ0xavYMgUWM",
 	"r3L85mdYA3wDeD0CxUhsMjxJiKweOHvu+PboEsCKpIrFRFFxrVWsf4FYKDbVOiN8e0V3MsgAc1idURYY",
 	"7Ah84ysKKRZkB36L1FBlwclpKNeXSVGtVT4aJFrla5PsOL2S+r4yQPXu0OSt4mWDPmpnaCe5Oq6x4dAN",
@@ -1176,31 +1203,31 @@ var swaggerSpec = []string{
 	"w6it/7K1mz2/uTeYp9WvAZv20O7FjnV33co0xFG9gixprOKiokOjc02yjNDUNlyOyuuKJro7ukSueItp",
 	"CsPz38DroDtneYmLXKrDi04hWBdFBpjqnqYsxIokF5v6jL4z1LnmOIVVVqSFn476XPrjLUIZiYFyCHvu",
 	"WNcipHhdEzhgziHFbbqUfk/hyNUGWFWUvA0MDbmYV/x07qo87KSSzYJevrTj2huz3XhsB58tdgq1FQkd",
-	"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",
+	"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",
-	"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",
+	"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",
-	"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",
-	"AP//iDblepI9AAA=",
+	"EXq8AHM+GvNxJObTSGllJavyHMvio2corQzSx3cvyL5SlW9qu51QEn42rcD/M/Bdk8GceF7OcShDe7Z6",
+	"O5adU9zbse2cF9+Obedk+oZsWztcD1f3ZM7y+OCwGFWAe+PtodXXhzYfh/Y4Bu1pjJBuxa3LZV1u9XOr",
+	"1k6/k+RwsuB+SdySq7wtO6h2mULtxlawCtped0Ls6J3U0d4+39nOtaih7vYjPo5DfBonasfp/wbBCOxA",
+	"Od7xe4T+qndkXffXdygGhMFXA/n7iIbAFZehYXEMfX4Z+uMl6E+XCO/WiPC1lkDdsMdOwWCxly5/jC6t",
+	"uYCuYrq+fq4emslWa9zVmlNFV+3xAoekR1fmcYW0dxN38Lrpw5uPxHschfc0Sk7P2llHsU0C/UJnQfv2",
+	"aCgPnluXUn/8TOgOWrzzle5MpTcTqYca0a13RUN7WaPTz0bcm/E1dro5X+OQd2E5qii5F8eHlqUA5nw0",
+	"5uNIzKeR0rrlqVVc6gJlX5kS1dxBDlYoe3f4f6BA1VMjZ66kRkjD605nwOSmRo7ffgKaii1aPETn7XCD",
+	"DOvZ1nXZjUvC/u37wTnoRZyPRXwch/g0TlRP/tnUseln3nSy7+QG22Bdf4utesXrb6r6fyoJbECf6/90",
+	"9K1jN6ERKgvusclzwd/bKL6UudAsVz1DuMZRwH9K2WaF/aD/6VDPGpVpW1PGl6UsRs308GUpzcKB7Wo/",
+	"qLn+qYGgJNIA9md2D1MkqRrJvtfu/Gz+v2RfPNt/rdhXn5o/mzZg9fLXeve5/u+bfaOi77A8/DcAAP//",
+	"5jiQCIA9AAA=",
 }
 
-// GetSwagger returns the Swagger specification corresponding to the generated code
-// in this file.
-func GetSwagger() (*openapi3.Swagger, error) {
+// GetSwagger returns the content of the embedded swagger specification file
+// or error if failed to decode
+func decodeSpec() ([]byte, error) {
 	zipped, err := base64.StdEncoding.DecodeString(strings.Join(swaggerSpec, ""))
 	if err != nil {
 		return nil, fmt.Errorf("error base64 decoding spec: %s", err)
@@ -1215,10 +1242,58 @@ func GetSwagger() (*openapi3.Swagger, error) {
 		return nil, fmt.Errorf("error decompressing spec: %s", err)
 	}
 
-	swagger, err := openapi3.NewSwaggerLoader().LoadSwaggerFromData(buf.Bytes())
-	if err != nil {
-		return nil, fmt.Errorf("error loading Swagger: %s", err)
+	return buf.Bytes(), nil
+}
+
+var rawSpec = decodeSpecCached()
+
+// a naive cached of a decoded swagger spec
+func decodeSpecCached() func() ([]byte, error) {
+	data, err := decodeSpec()
+	return func() ([]byte, error) {
+		return data, err
 	}
-	return swagger, nil
+}
+
+// Constructs a synthetic filesystem for resolving external references when loading openapi specifications.
+func PathToRawSpec(pathToFile string) map[string]func() ([]byte, error) {
+	var res = make(map[string]func() ([]byte, error))
+	if len(pathToFile) > 0 {
+		res[pathToFile] = rawSpec
+	}
+
+	return res
+}
+
+// GetSwagger returns the Swagger specification corresponding to the generated code
+// in this file. The external references of Swagger specification are resolved.
+// The logic of resolving external references is tightly connected to "import-mapping" feature.
+// Externally referenced files must be embedded in the corresponding golang packages.
+// Urls can be supported but this task was out of the scope.
+func GetSwagger() (swagger *openapi3.Swagger, err error) {
+	var resolvePath = PathToRawSpec("")
+
+	loader := openapi3.NewSwaggerLoader()
+	loader.IsExternalRefsAllowed = true
+	loader.ReadFromURIFunc = func(loader *openapi3.SwaggerLoader, url *url.URL) ([]byte, error) {
+		var pathToFile = url.String()
+		pathToFile = path.Clean(pathToFile)
+		getSpec, ok := resolvePath[pathToFile]
+		if !ok {
+			err1 := fmt.Errorf("path not found: %s", pathToFile)
+			return nil, err1
+		}
+		return getSpec()
+	}
+	var specData []byte
+	specData, err = rawSpec()
+	if err != nil {
+		return
+	}
+	swagger, err = loader.LoadSwaggerFromData(specData)
+	if err != nil {
+		return
+	}
+	return
 }
 
