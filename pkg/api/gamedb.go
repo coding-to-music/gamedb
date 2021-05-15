@@ -16,7 +16,7 @@ const (
 	tagArticles = "Articles"
 	tagPackages = "Packages"
 	tagGroups   = "Groups"
-	TagPublic   = "Public"
+	TagPublic   = "Free"
 )
 
 func GetGlobalSteam() (swagger *openapi3.Swagger) {
