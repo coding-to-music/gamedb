@@ -103,6 +103,7 @@ func main() {
 func rootHandler(w http.ResponseWriter, r *http.Request) {
 	returnResponse(w, r, http.StatusOK, map[string]interface{}{
 		"docs":    config.C.GlobalSteamDomain + "/api/globalsteam",
+		"api-key": config.C.GlobalSteamDomain + "/settings",
 		"support": config.C.DiscordServerInviteURL,
 	})
 }
