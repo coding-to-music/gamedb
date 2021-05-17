@@ -2,6 +2,7 @@ package main
 
 import (
 	"compress/flate"
+	"context"
 	"errors"
 	"math/rand"
 	"net/http"
@@ -24,6 +25,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	chiMiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/gobuffalo/packr/v2"
+	"go.uber.org/zap"
 )
 
 var (
@@ -225,7 +227,9 @@ func rateLimitMiddleware(next http.Handler) http.Handler {
 
 		err := limiters.GetLimiter(r.RemoteAddr).Wait(r.Context())
 		if err != nil {
-			log.ErrS(err)
+			if !errors.Is(err, context.Canceled) {
+				log.Err("ip rate limited", zap.String("ip", r.RemoteAddr), zap.Error(err))
+			}
 			handlers.Error500Handler(w, r)
 			return
 		}
