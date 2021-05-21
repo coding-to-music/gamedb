@@ -259,7 +259,7 @@ if ($appsComparePage.length > 0) {
                     yAxis: {
                         allowDecimals: false,
                         title: {text: ''},
-                        min: 0,
+                        // min: 0,
                         max: 100,
                         endOnTick: false,
                         labels: {
