@@ -71,9 +71,12 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//
-	commitsCount, err := strconv.Atoi(ldflags.CommitCount)
-	if err != nil {
-		log.ErrS(err)
+	var commitsCount int
+	if ldflags.CommitCount != "" {
+		commitsCount, err = strconv.Atoi(ldflags.CommitCount)
+		if err != nil {
+			log.ErrS(err)
+		}
 	}
 
 	var response = datatable.NewDataTablesResponse(r, query, int64(commitsCount), int64(commitsCount), nil)
