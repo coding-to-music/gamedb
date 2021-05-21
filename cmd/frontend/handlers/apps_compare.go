@@ -398,6 +398,17 @@ func appsComparePricesHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
+	// Extend last price to now
+	for k, v := range priceMap {
+		if len(v) > 0 {
+			priceMap[k] = append(priceMap[k], []interface{}{
+				time.Now().Unix() * 1000,
+				v[len(v)-1][1],
+			})
+		}
+	}
+
+	//
 	var ret []influx.HighChartsJSONMulti
 	for _, v := range idInts {
 		ret = append(ret, influx.HighChartsJSONMulti{
