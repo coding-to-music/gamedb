@@ -307,7 +307,7 @@ func returnResponse(w http.ResponseWriter, r *http.Request, code int, i interfac
 		log.Err("encoding response", zap.Error(err))
 	}
 
-	if config.IsProd() {
+	if config.IsProd() && !helpers.IsBot(r.UserAgent()) {
 		go func() {
 
 			userID, _ := r.Context().Value(ctxUserIDField).(int)
