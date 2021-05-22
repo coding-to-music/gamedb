@@ -122,7 +122,7 @@
                         </div>
                     </div>
 
-                    <div class="card">
+                    <div class="card mb-4">
                         <h5 class="card-header">Wishlists</h5>
                         <div class="card-body">
                             <div id="wishlists-chart">
@@ -132,15 +132,15 @@
                         <small class="card-footer">From {{ comma64 .PlayersCount }} Global Steam players.</small>
                     </div>
 
-                    {{/*                    <div class="card">*/}}
-                    {{/*                        <h5 class="card-header">Google Searches</h5>*/}}
-                    {{/*                        <div class="card-body p-0">*/}}
-                    {{/*                            <script type="text/javascript" src="https://ssl.gstatic.com/trends_nrtr/2578_RC01/embed_loader.js"></script>*/}}
-                    {{/*                            {{ range .GoogleJSON }}*/}}
-                    {{/*                                <script type="text/javascript">trends.embed.renderExploreWidget('TIMESERIES', {{ . }});</script>*/}}
-                    {{/*                            {{ end }}*/}}
-                    {{/*                        </div>*/}}
-                    {{/*                    </div>*/}}
+                    <div class="card">
+                        <h5 class="card-header">Google Searches</h5>
+                        <div class="card-body p-0">
+                            <script type="text/javascript" src="https://ssl.gstatic.com/trends_nrtr/2578_RC01/embed_loader.js"></script>
+                            {{ range .GoogleJSON }}
+                                <script type="text/javascript">trends.embed.renderExploreWidget('TIMESERIES', {{ . }});</script>
+                            {{ end }}
+                        </div>
+                    </div>
 
                 {{ end }}
             </div>
