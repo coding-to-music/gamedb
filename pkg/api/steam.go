@@ -16,11 +16,11 @@ import (
 	"github.com/google/go-github/v32/github"
 )
 
-func GetSteam() *openapi3.Swagger {
+func GetSteam() *openapi3.T {
 
 	var groups = map[string][]string{}
 
-	var swagger = &openapi3.Swagger{
+	var swagger = &openapi3.T{
 		Servers: []*openapi3.Server{
 			{URL: "https://api.steampowered.com/"},
 		},
@@ -110,7 +110,7 @@ var groupsMap = map[string]*regexp.Regexp{
 
 var steamJSONLock sync.Mutex
 
-func addInterfaceToSwagger(swagger *openapi3.Swagger, interfacex *steamapi.APIInterface, groups map[string][]string) {
+func addInterfaceToSwagger(swagger *openapi3.T, interfacex *steamapi.APIInterface, groups map[string][]string) {
 
 	steamJSONLock.Lock()
 	defer steamJSONLock.Unlock()

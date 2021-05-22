@@ -19,9 +19,9 @@ const (
 	TagPublic   = "Free"
 )
 
-func GetGlobalSteam() (swagger *openapi3.Swagger) {
+func GetGlobalSteam() (swagger *openapi3.T) {
 
-	swagger = &openapi3.Swagger{
+	swagger = &openapi3.T{
 		OpenAPI: "3.0.0",
 		Servers: []*openapi3.Server{
 			{URL: "https://api.globalsteam.online"},
@@ -643,11 +643,11 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 }
 
 var (
-	globalResolved     *openapi3.Swagger
+	globalResolved     *openapi3.T
 	globalResolvedLock sync.Mutex
 )
 
-func GetGlobalSteamResolved() (*openapi3.Swagger, error) {
+func GetGlobalSteamResolved() (*openapi3.T, error) {
 
 	globalResolvedLock.Lock()
 	defer globalResolvedLock.Unlock()
@@ -655,7 +655,7 @@ func GetGlobalSteamResolved() (*openapi3.Swagger, error) {
 	if globalResolved == nil {
 
 		swagger := GetGlobalSteam()
-		err := openapi3.NewSwaggerLoader().ResolveRefsIn(swagger, nil)
+		err := openapi3.NewLoader().ResolveRefsIn(swagger, nil)
 		if err != nil {
 			return nil, err
 		}
