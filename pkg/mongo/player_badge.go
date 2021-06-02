@@ -57,7 +57,7 @@ func (badge PlayerBadge) IsSpecial() bool {
 }
 
 func (badge PlayerBadge) IsEvent() bool {
-	return helpers.IsBadgeEvent(badge.BadgeID)
+	return helpers.IsBadgeEvent(badge.AppID)
 }
 
 func (badge PlayerBadge) IsGame(appID int) bool {
