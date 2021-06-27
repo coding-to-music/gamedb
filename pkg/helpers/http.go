@@ -18,7 +18,11 @@ import (
 
 func IsBot(userAgent string) bool {
 
-	if userAgent == "" || strings.Contains(strings.ToLower(userAgent), strings.ToLower("bot")) {
+	userAgent = strings.ToLower(userAgent)
+
+	if userAgent == "" ||
+		strings.Contains(userAgent, "bot") ||
+		strings.Contains(userAgent, "crawl") {
 		return true
 	}
 
@@ -46,7 +50,9 @@ func Head(link string, timeout time.Duration) (code int, err error) {
 	policy := backoff.NewExponentialBackOff()
 	policy.InitialInterval = time.Second * 3
 
-	err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { log.Info("Doing a HEAD call", zap.Error(err), zap.Duration("duration", timeout), zap.String("link", link)) })
+	err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) {
+		log.Info("Doing a HEAD call", zap.Error(err), zap.Duration("duration", timeout), zap.String("link", link))
+	})
 	return code, err
 }
 
