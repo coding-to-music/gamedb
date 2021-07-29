@@ -134,7 +134,7 @@ func NewUser(r *http.Request, userEmail, password string, prodCC steamapi.Produc
 	var passwordBytes []byte
 	if password != "" {
 
-		passwordBytes, err = bcrypt.GenerateFromPassword([]byte(password), 14)
+		passwordBytes, err = bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		if err != nil {
 			return user, err
 		}
