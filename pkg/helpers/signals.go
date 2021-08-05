@@ -18,6 +18,7 @@ func KeepAlive(callbacks ...func()) {
 		syscall.SIGQUIT,
 		syscall.SIGINT,
 		syscall.SIGKILL,
+		os.Interrupt,
 	}
 
 	signalsChan := make(chan os.Signal, len(signals))
