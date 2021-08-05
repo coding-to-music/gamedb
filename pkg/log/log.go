@@ -57,24 +57,19 @@ func InitZap(logName string) {
 
 func Flush() {
 
-	err := recover()
-	if err != nil {
-		zap.S().Error(err)
-	}
+	recover()
 
-	err = zap.L().Sync()
+	if err := zap.L().Sync(); err != nil {
 
-	// Ignore unactionable errors
-	if osErr, ok := err.(*os.PathError); ok {
-		wrappedErr := osErr.Unwrap()
-		switch wrappedErr {
-		case syscall.EINVAL, syscall.ENOTSUP, syscall.ENOTTY:
-			err = nil
+		// Ignore unactionable errors
+		if osErr, ok := err.(*os.PathError); ok {
+			switch osErr.Unwrap() {
+			case syscall.EINVAL, syscall.ENOTSUP, syscall.ENOTTY:
+				return
+			}
 		}
-	}
 
-	if err != nil {
-		zap.S().Error(err)
+		zap.L().Error("Failed to sync logs", zap.Error(err))
 	}
 }
 
